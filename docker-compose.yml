@@ -1,0 +1,56 @@
+# Bu araç @keyiflerolsun tarafından | CodeNight için yazılmıştır.
+
+networks:
+  simshield-network:
+    driver: bridge
+
+services:
+  # MongoDB Service
+  simshield-mongodb:
+    container_name: simshield-mongodb
+    image: mongo:7.0
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: simshield123
+      MONGO_INITDB_DATABASE: simshield_iot
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - simshield-network
+    ports:
+      - "27018:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh 127.0.0.1:27017/simshield_iot --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis Service
+  simshield-redis:
+    container_name: simshield-redis
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - simshield-network
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_logs:
+    driver: local

@@ -1,0 +1,44 @@
+# Bu araç @keyiflerolsun tarafından | CodeNight için yazılmıştır.
+
+PROJE : SimShield IoT Fleet Guardian
+APP   :
+  HOST    : 0.0.0.0
+  PORT    : 3310
+  WORKERS : 1
+  CACHE   : 15        # ! Minutes
+
+DATABASE:
+  MONGODB:
+    # Docker ortamında çevre değişkeninden alınacak, yoksa 127.0.0.1 kullanılacak
+    URI: mongodb://admin:simshield123@127.0.0.1:27018/simshield_iot?authSource=admin
+    NAME: simshield_iot
+  REDIS:
+    HOST: 127.0.0.1
+    PORT: 6380
+    DB: 0
+
+IOT_SETTINGS:
+  ANOMALY_DETECTION:
+    SPIKE_MULTIPLIER: 2.5
+    DRAIN_DAYS: 3
+    DRAIN_MULTIPLIER: 1.5
+    INACTIVITY_HOURS: 48
+    UNEXPECTED_ROAMING_THRESHOLD: 20
+  RISK_SCORING:
+    SPIKE_SCORE: 40
+    DRAIN_SCORE: 30
+    INACTIVITY_SCORE: 20
+    ROAMING_SCORE: 40
+    MAX_SCORE: 100
+  THRESHOLDS:
+    RED_RISK: 70
+    ORANGE_RISK: 40
+
+# Docker/Production ayarları
+PRODUCTION:
+  ENABLE_CORS: true
+  ALLOWED_ORIGINS: 
+    - "http://127.0.0.1:3310"
+    - "http://127.0.0.1:3310"
+  ENABLE_METRICS: true
+  LOG_LEVEL: INFO

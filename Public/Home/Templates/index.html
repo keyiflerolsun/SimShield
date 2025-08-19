@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SimShield IoT Fleet Dashboard</title>
+  <link rel="stylesheet" href="/static/home/CSS/iot-dashboard.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>
+        <span class="shield-icon">🛡️</span>
+        SimShield IoT Fleet Dashboard
+      </h1>
+      <div class="controls">
+        <div class="connection-status">
+          <span class="status-dot" id="ws-dot"></span>
+          <span id="ws-status">Bağlanıyor...</span>
+        </div>
+        <button id="refresh">🔄 Yenile</button>
+      </div>
+    </header>
+
+    <!-- İstatistikler -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" id="total-sims">-</div>
+        <div class="stat-label">Toplam SIM</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="active-sims">-</div>
+        <div class="stat-label">Aktif</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="high-risk-sims">-</div>
+        <div class="stat-label">Yüksek Risk</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="anomaly-count">-</div>
+        <div class="stat-label">Anomali</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="section-title">SIM Filosu</div>
+        
+        <!-- Arama ve Filtreler -->
+        <input type="text" class="search-box" id="search-input" placeholder="SIM ID veya cihaz türü ara...">
+        
+        <div class="filter-row">
+          <select class="filter-select" id="risk-filter">
+            <option value="">Tüm Risk</option>
+            <option value="red">Yüksek</option>
+            <option value="orange">Orta</option>
+            <option value="green">Düşük</option>
+          </select>
+          <select class="filter-select" id="status-filter">
+            <option value="">Tüm Durum</option>
+            <option value="active">Aktif</option>
+            <option value="blocked">Engelli</option>
+            <option value="suspended">Askıda</option>
+          </select>
+          <select class="filter-select" id="city-filter">
+            <option value="">Tüm Şehir</option>
+          </select>
+        </div>
+        
+        <div class="muted">Listeden bir SIM seçin — sağ panelde detay gözükecek.</div>
+        <div style="height:12px"></div>
+        <div class="list" id="fleet-list">Yükleniyor...</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="section-title">SIM Detayı</div>
+            <div id="selected-sim-name" style="font-size:16px;font-weight:600">Hiçbir SIM seçilmedi</div>
+            <div id="selected-sim-meta" class="muted">—</div>
+          </div>
+          <div>
+            <button id="analyze-btn" class="secondary" disabled>🔍 Analiz Çalıştır</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        
+        <!-- Kullanım Grafiği -->
+        <div class="section-title">30 Gün Kullanım Trendi</div>
+        <div class="chart" id="usage-chart">
+          <div class="muted">SIM seçildiğinde grafik gözükecek</div>
+        </div>
+
+        <div style="height:12px"></div>
+        
+        <!-- Hızlı Aksiyonlar -->
+        <div class="section-title">Hızlı Aksiyonlar</div>
+        <div class="actions">
+          <button id="freeze-btn" class="danger" disabled>❄️ 24s Dondur</button>
+          <button id="throttle-btn" disabled>🐌 Hız Düşür</button>
+          <button id="notify-btn" disabled>📢 Uyarı Gönder</button>
+          <button id="best-options-btn" class="secondary" disabled>💡 En İyi Seçenekler</button>
+        </div>
+
+        <div style="height:12px"></div>
+        
+        <!-- Anomali Analizi -->
+        <div class="section-title">Anomali Analizi</div>
+        <div class="analysis-section" id="anomaly-analysis">
+          <div class="muted">SIM seçildiğinde anomali analizi gözükecek</div>
+        </div>
+
+        <div style="height:12px"></div>
+        
+        <!-- İşlem Geçmişi -->
+        <div class="section-title">İşlem Geçmişi</div>
+        <div class="log" id="actions-log">
+          <div class="muted">Henüz işlem yok.</div>
+        </div>
+
+        <div style="height:12px"></div>
+        
+        <!-- Canlı Uyarılar -->
+        <div class="section-title">Canlı Uyarılar</div>
+        <div class="log" id="alerts-log">
+          <div class="muted">WebSocket bağlantısı bekleniyor...</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      SimShield IoT Fleet Guardian • Backend API: <code id="api-status">bağlanıyor...</code>
+    </footer>
+  </div>
+
+  <script src="/static/home/JS/iot-dashboard.js"></script>
+</body>
+</html>
