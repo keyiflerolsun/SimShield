@@ -3,7 +3,7 @@
 from typing            import List, Optional
 from datetime          import datetime, timedelta
 from DB                import db_manager
-from ..Models          import SimCard, IoTPlan, Usage, DeviceProfile, AddOnPack, ActionLog, Anomaly, FleetResponse
+from ..Models          import SimCard, IoTPlan, Usage, DeviceProfile, AddOnPack, ActionLog, Anomaly, FleetResponse, AnomalyType, Severity
 from .anomaly_detector import anomaly_detector
 import uuid
 
@@ -121,11 +121,69 @@ class IoTService:
         
         return addons
     
+    async def get_sim_anomalies(self, sim_id: str, days: int = 7) -> List[Anomaly]:
+        """SIM'in son X gündeki anomalilerini al"""
+        from datetime import datetime, timedelta
+        
+        end_date = datetime.utcnow()
+        start_date = end_date - timedelta(days=days)
+        
+        query = {
+            "sim_id": sim_id,
+            "detected_at": {
+                "$gte": start_date,
+                "$lte": end_date
+            }
+        }
+        
+        results = await self.db_manager.mongo_db.anomalies.find(query).to_list(length=100)
+        
+        anomalies = []
+        for result in results:
+            try:
+                # MongoDB ObjectId'yi string'e çevir
+                if "_id" in result:
+                    result["_id"] = str(result["_id"])
+                
+                # Anomaly objesi oluştur
+                anomaly = Anomaly(
+                    sim_id=result.get("sim_id"),
+                    type=AnomalyType(result.get("type")),
+                    severity=Severity(result.get("severity")),
+                    message=result.get("message"),
+                    detected_at=result.get("detected_at"),
+                    data_usage=result.get("data_usage", 0.0),
+                    cost_impact=result.get("cost_impact", 0.0)
+                )
+                anomalies.append(anomaly)
+            except Exception as e:
+                print(f"Error creating anomaly object: {e}")
+                continue
+        
+        return anomalies
+
     async def save_anomaly(self, anomaly: Anomaly) -> str:
         """
-        Anomaliyi veritabanına kaydeder
+        Anomaliyi veritabanına kaydeder (duplicateları önler)
         """
         collection = self.db.get_collection("anomalies")
+        
+        # Son 24 saat içinde aynı SIM ve aynı tip anomali var mı kontrol et
+        last_24h = datetime.now() - timedelta(hours=24)
+        
+        existing = await collection.find_one({
+            "sim_id": anomaly.sim_id,
+            "type": anomaly.type.value if hasattr(anomaly.type, 'value') else str(anomaly.type),
+            "detected_at": {
+                "$gte": last_24h
+            }
+        })
+        
+        # Eğer son 24 saatte aynı tipte anomali varsa, kaydetme
+        if existing:
+            return existing.get("anomaly_id", "existing")
+        
+        # Yeni anomali kaydet
         anomaly_dict = anomaly.dict()
         anomaly_dict["anomaly_id"] = str(uuid.uuid4())
         

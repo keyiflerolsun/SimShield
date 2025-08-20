@@ -1,13 +1,13 @@
 # Bu araç @keyiflerolsun tarafından | CodeNight için yazılmıştır.
 
 networks:
-  simshield-network:
+  simshield_network:
     driver: bridge
 
 services:
   # MongoDB Service
-  simshield-mongodb:
-    container_name: simshield-mongodb
+  simshield_mongodb:
+    container_name: simshield_mongodb
     image: mongo:7.0
     restart: unless-stopped
     environment:
@@ -16,9 +16,9 @@ services:
       MONGO_INITDB_DATABASE: simshield_iot
     volumes:
       - mongodb_data:/data/db
-      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
-      - simshield-network
+      - simshield_network
     ports:
       - "27018:27017"
     healthcheck:
@@ -29,15 +29,15 @@ services:
       start_period: 30s
 
   # Redis Service
-  simshield-redis:
-    container_name: simshield-redis
+  simshield_redis:
+    container_name: simshield_redis
     image: redis:7.2-alpine
     restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     networks:
-      - simshield-network
+      - simshield_network
     ports:
       - "6380:6379"
     healthcheck:
@@ -47,10 +47,34 @@ services:
       retries: 5
       start_period: 10s
 
+  # SimShield uygulaması
+  simshield:
+    build: .
+    container_name: simshield_app
+    restart: unless-stopped
+    ports:
+      - "3310:3310"
+    environment:
+      - MONGODB_URI=mongodb://admin:simshield123@mongodb:27017/simshield_iot?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ENVIRONMENT=production
+    depends_on:
+      simshield_mongodb:
+        condition: service_healthy
+      simshield_redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - simshield_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3310/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
 volumes:
   mongodb_data:
-    driver: local
   redis_data:
-    driver: local
-  app_logs:
-    driver: local

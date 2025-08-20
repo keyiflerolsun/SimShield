@@ -7,7 +7,6 @@ IoT SIM Filosu için örnek verileri MongoDB'ye yükler
 
 import asyncio
 import os
-import time
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 import random
@@ -35,6 +34,7 @@ SIMS_DATA = [
     {"sim_id": "2013", "customer_id": "9005", "device_type": "Camera", "apn": "apn-video", "plan_id": "13", "status": "active", "city": "Diyarbakir"},
     {"sim_id": "2014", "customer_id": "9006", "device_type": "SmartMeter", "apn": "apn-iot", "plan_id": "11", "status": "active", "city": "Malatya"},
     {"sim_id": "2015", "customer_id": "9006", "device_type": "Sensor", "apn": "apn-iot", "plan_id": "11", "status": "active", "city": "Van"},
+    {"sim_id": "2099", "customer_id": "9007", "device_type": "Camera", "apn": "apn-video", "plan_id": "13", "status": "active", "city": "Istanbul"},  # YÜKSEK RİSKLİ SIM
 ]
 
 CUSTOMERS_DATA = [
@@ -44,6 +44,7 @@ CUSTOMERS_DATA = [
     {"customer_id": "9004", "company_name": "Enerji İzleme Sistemleri", "contact_email": "sistem@energiizleme.com", "sector": "Energy"},
     {"customer_id": "9005", "company_name": "Güvenlik Kamera Sistemleri", "contact_email": "teknik@guvenlikkamera.com", "sector": "Security"},
     {"customer_id": "9006", "company_name": "Çevre İzleme Merkezi", "contact_email": "veri@cevreizleme.org", "sector": "Environment"},
+    {"customer_id": "9007", "company_name": "Kritik Güvenlik Sistemleri", "contact_email": "alarm@kritikguvenlik.com", "sector": "Critical Security"},
 ]
 
 IOT_PLANS_DATA = [
@@ -154,13 +155,19 @@ async def generate_usage_data():
     
     # Her SIM için farklı anomali senaryoları
     anomaly_scenarios = {
-        "2001": {"type": "spike", "day": 15, "factor": 10},  # Sudden spike
-        "2002": {"type": "drain", "start_day": 18, "duration": 5, "factor": 2.5},  # Sustained drain
-        "2003": {"type": "inactivity", "start_day": 20, "duration": 8},  # Inactivity
-        "2004": {"type": "roaming", "day": 22, "roaming_mb": 120},  # Unexpected roaming
-        "2006": {"type": "spike", "day": 25, "factor": 8},  # Another spike
-        "2008": {"type": "drain", "start_day": 12, "duration": 4, "factor": 3},  # Camera drain
-        "2012": {"type": "roaming", "day": 10, "roaming_mb": 200},  # Tracker roaming (expected)
+        "2001": {"type": "spike", "day": 28, "factor": 15},  # Sudden spike (bugün için)
+        "2002": {"type": "drain", "start_day": 26, "duration": 4, "factor": 4},  # Sustained drain (son 4 gün)
+        "2003": {"type": "inactivity", "start_day": 27, "duration": 3},  # Inactivity (son 3 gün)
+        "2004": {"type": "roaming", "day": 29, "roaming_mb": 150},  # Unexpected roaming (dün)
+        "2006": {"type": "spike", "day": 29, "factor": 12},  # Another spike (dün)
+        "2008": {"type": "drain", "start_day": 25, "duration": 5, "factor": 5},  # Camera drain (son 5 gün)
+        "2012": {"type": "roaming", "day": 28, "roaming_mb": 300},  # Tracker roaming (expected - bugün)
+        "2011": {"type": "spike", "day": 27, "factor": 20},  # Extreme spike (2 gün önce)
+        "2099": {"type": "critical_multi", "scenarios": [  # YÜKSEK RİSKLİ - Çoklu anomali
+            {"type": "extreme_spike", "day": 29, "factor": 25},  # Çok yüksek spike (dün)
+            {"type": "sustained_drain", "start_day": 25, "duration": 5, "factor": 8},  # Sürekli yüksek kullanım
+            {"type": "roaming", "day": 28, "roaming_mb": 500},  # Yüksek roaming (bugün)
+        ]},
     }
     
     for sim in SIMS_DATA:
@@ -191,7 +198,26 @@ async def generate_usage_data():
             if sim_id in anomaly_scenarios:
                 scenario = anomaly_scenarios[sim_id]
                 
-                if scenario["type"] == "spike" and day == scenario["day"]:
+                # Çoklu anomali senaryosu (2099 için)
+                if scenario["type"] == "critical_multi":
+                    for sub_scenario in scenario["scenarios"]:
+                        if sub_scenario["type"] == "extreme_spike" and day == sub_scenario["day"]:
+                            mb_used = base_usage * sub_scenario["factor"]
+                            logger.info(f"🚨🚨 EXTREME Spike anomalisi: SIM {sim_id}, Gün {day}, {mb_used:.2f} MB")
+                        
+                        elif sub_scenario["type"] == "sustained_drain":
+                            if sub_scenario["start_day"] <= day < sub_scenario["start_day"] + sub_scenario["duration"]:
+                                mb_used = max(mb_used, base_usage * sub_scenario["factor"])  # En yüksek değeri al
+                                if day == sub_scenario["start_day"]:
+                                    logger.info(f"🚨🚨 CRITICAL Drain anomalisi: SIM {sim_id}, {sub_scenario['duration']} gün sürecek")
+                        
+                        elif sub_scenario["type"] == "roaming" and day == sub_scenario["day"]:
+                            roaming_mb = max(roaming_mb, sub_scenario["roaming_mb"])  # En yüksek roaming değeri
+                            mb_used = max(mb_used, base_usage + roaming_mb * 0.4)  # Roaming daha fazla kullanım yaratır
+                            logger.info(f"🚨🚨 CRITICAL Roaming anomalisi: SIM {sim_id}, {roaming_mb} MB roaming")
+                
+                # Tekli anomali senaryoları
+                elif scenario["type"] == "spike" and day == scenario["day"]:
                     mb_used = base_usage * scenario["factor"]
                     logger.info(f"🚨 Spike anomalisi oluşturuldu: SIM {sim_id}, Gün {day}, {mb_used:.2f} MB")
                 
@@ -234,82 +260,33 @@ async def generate_usage_data():
     return usage_data
 
 async def calculate_risk_scores():
-    """Risk skorlarını hesaplar ve SIM verilerini günceller"""
+    """Risk skorlarını sıfırlar - Analiz arayüzden manuel olarak çalıştırılacak"""
     try:
         mongodb_uri = os.environ.get('MONGODB_URI', AYAR["DATABASE"]["MONGODB"]["URI"])
         client = AsyncIOMotorClient(mongodb_uri)
         db = client[AYAR["DATABASE"]["MONGODB"]["NAME"]]
         
         sims_collection = db["sims"]
-        usage_collection = db["usage"]
         
-        for sim in SIMS_DATA:
-            sim_id = sim["sim_id"]
-            
-            # Son 30 günlük kullanımı al
-            usage_cursor = usage_collection.find(
-                {"sim_id": sim_id}
-            ).sort("timestamp", -1).limit(30)
-            
-            usage_data = await usage_cursor.to_list(length=30)
-            
-            if len(usage_data) < 7:
-                continue
-            
-            # Son 7 günün ortalamasını hesapla
-            recent_usage = [u["mb_used"] for u in usage_data[:7]]
-            avg_usage = sum(recent_usage) / len(recent_usage)
-            
-            # Anomalileri tespit et
-            risk_score = 0
-            anomalies = []
-            
-            # Spike kontrolü
-            for usage in usage_data[:3]:  # Son 3 gün
-                if usage["mb_used"] > avg_usage * 2.5:
-                    risk_score += 40
-                    anomalies.append("sudden_spike")
-                    break
-            
-            # Drain kontrolü (3 gün üst üste yüksek kullanım)
-            if len([u for u in usage_data[:3] if u["mb_used"] > avg_usage * 1.5]) >= 3:
-                risk_score += 30
-                anomalies.append("sustained_drain")
-            
-            # Inactivity kontrolü
-            if len([u for u in usage_data[:2] if u["mb_used"] == 0]) >= 2:
-                risk_score += 20
-                anomalies.append("inactivity")
-            
-            # Roaming kontrolü
-            for usage in usage_data[:7]:
-                if usage["roaming_mb"] > 20:
-                    device_profile = next((p for p in DEVICE_PROFILES_DATA if p["device_type"] == sim["device_type"]), None)
-                    if device_profile and not device_profile["roaming_expected"]:
-                        risk_score += 40
-                        anomalies.append("unexpected_roaming")
-                        break
-            
-            # Risk skorunu güncelle
-            risk_score = min(risk_score, 100)
-            
-            await sims_collection.update_one(
-                {"sim_id": sim_id},
-                {
-                    "$set": {
-                        "risk_score": risk_score,
-                        "anomaly_count": len(set(anomalies)),
-                        "anomalies": list(set(anomalies)),
-                        "last_analysis": datetime.now()
-                    }
+        # Tüm SIM'lerin risk skorlarını sıfırla
+        await sims_collection.update_many(
+            {},
+            {
+                "$set": {
+                    "risk_score": 0,
+                    "risk_level": "green",
+                    "anomaly_count": 0,
+                    "anomalies": [],
+                    "last_analysis": None
                 }
-            )
+            }
+        )
         
-        logger.info("✅ Risk skorları hesaplandı ve güncellendi")
+        logger.info("✅ Risk skorları sıfırlandı - Manuel analiz için hazır")
         client.close()
         
     except Exception as e:
-        logger.error(f"❌ Risk skoru hesaplama hatası: {e}")
+        logger.error(f"❌ Risk skoru sıfırlama hatası: {e}")
 
 async def load_sample_data():
     """Örnek verileri MongoDB'ye yükler"""
@@ -405,8 +382,8 @@ async def load_sample_data():
         
         logger.info("✅ Veritabanı indeksleri oluşturuldu")
         
-        # Risk skorlarını hesapla
-        logger.info("🔄 Risk skorları hesaplanıyor...")
+        # Risk skorlarını sıfırla (Manuel analiz için)
+        logger.info("🔄 Risk skorları sıfırlanıyor (Manuel analiz için hazırlanıyor)...")
         await calculate_risk_scores()
         
         # Cache'i başlat (Redis)
@@ -431,11 +408,12 @@ async def load_sample_data():
         logger.info("📊 Dashboard URL: http://127.0.0.1:3310")
         logger.info("🔗 API Docs: http://127.0.0.1:3310/api/v1/docs")
         logger.info("📈 Analytics: http://127.0.0.1:3310/api/v1/fleet")
+        logger.info("🔍 Anomali analizi arayüzden manuel olarak çalıştırılabilir")
         
         # Veri özeti
         logger.info(f"\n📋 Yüklenen Veri Özeti:")
         logger.info(f"   • {len(CUSTOMERS_DATA)} Müşteri")
-        logger.info(f"   • {len(SIMS_DATA)} SIM Kartı")
+        logger.info(f"   • {len(SIMS_DATA)} SIM Kartı (Risk skorları sıfır - Manuel analiz için hazır)")
         logger.info(f"   • {len(IOT_PLANS_DATA)} IoT Planı")
         logger.info(f"   • {len(usage_data)} Kullanım Kaydı (30 gün)")
         logger.info(f"   • {len(ACTIONS_LOG_DATA)} Eylem Logu")

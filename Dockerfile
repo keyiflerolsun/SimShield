@@ -9,9 +9,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONIOENCODING="UTF-8"
 # * Dil ve Bölge
 ENV LANGUAGE="tr_TR.UTF-8" LANG="tr_TR.UTF-8" LC_ALL="tr_TR.UTF-8" TZ="Europe/Istanbul"
 
-# * SimShield IoT Environment
-ENV MONGODB_URI="" REDIS_HOST="" REDIS_PORT=""
-
 # * Çalışma Alanı
 WORKDIR /usr/src/SimShield-IoT
 COPY ./ /usr/src/SimShield-IoT

@@ -6,7 +6,8 @@ from .enums import (
     DeviceType, 
     ActionType,
     AnomalyType,
-    RiskLevel
+    RiskLevel,
+    Severity
 )
 
 # Database Models

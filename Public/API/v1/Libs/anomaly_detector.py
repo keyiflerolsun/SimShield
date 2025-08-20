@@ -1,6 +1,6 @@
 # Bu araç @keyiflerolsun tarafından | CodeNight için yazılmıştır.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing   import List, Tuple
 from ..Models import Usage, Anomaly, AnomalyType, RiskLevel, DeviceProfile
 from Settings import IOT_SETTINGS
@@ -26,26 +26,36 @@ class AnomalyDetector:
         if len(usage_data) < 7:
             return anomalies, 0
             
-        # Son 7 günün ortalaması ve standart sapması
-        last_7_days = usage_data[-7:]
-        daily_usage = [usage.mb_used for usage in last_7_days]
+        # Son 7 günün ortalaması ve standart sapması (son 3 günü hariç tut, çünkü onlarda anomali olabilir)
+        if len(usage_data) >= 10:
+            # Son 10 günden son 3'ü hariç ilk 7'sini al (baseline için)
+            baseline_data = usage_data[-10:-3]
+        else:
+            baseline_data = usage_data[:-3] if len(usage_data) > 3 else usage_data[:-1]
+        
+        if len(baseline_data) < 3:
+            baseline_data = usage_data[:len(usage_data)//2] if len(usage_data) > 6 else usage_data[:-1]
+            
+        daily_usage = [usage.mb_used for usage in baseline_data]
         ma7 = statistics.mean(daily_usage) if daily_usage else 0
         std7 = statistics.stdev(daily_usage) if len(daily_usage) > 1 else 0
         
-        # Sudden Spike kontrolü
-        today_usage = usage_data[-1] if usage_data else None
-        if today_usage:
-            spike_threshold = max(ma7 * self.spike_multiplier, ma7 + 3 * std7)
-            if today_usage.mb_used > spike_threshold and ma7 > 0:
+        # Son 3 günü kontrol et (anomali için)
+        recent_days = usage_data[-3:] if len(usage_data) >= 3 else usage_data
+        
+        # Sudden Spike kontrolü - son 3 günde herhangi birinde
+        for usage in recent_days:
+            spike_threshold = max(ma7 * self.spike_multiplier, ma7 + 3 * std7, 50)  # minimum 50MB threshold
+            if usage.mb_used > spike_threshold and ma7 > 0:
                 anomaly = Anomaly(
                     sim_id=sim_id,
                     type=AnomalyType.SUDDEN_SPIKE,
-                    detected_at=today_usage.timestamp,
+                    detected_at=usage.timestamp,
                     severity=RiskLevel.RED,
-                    reason=f"Günlük kullanım {today_usage.mb_used:.1f}MB, son 7 gün ortalaması {ma7:.1f}MB",
+                    reason=f"Günlük kullanım {usage.mb_used:.1f}MB, baseline ortalama {ma7:.1f}MB (eşik: {spike_threshold:.1f}MB)",
                     evidence={
-                        "current_usage": today_usage.mb_used,
-                        "7day_average": ma7,
+                        "current_usage": usage.mb_used,
+                        "baseline_average": ma7,
                         "threshold": spike_threshold,
                         "multiplier": self.spike_multiplier
                     }
@@ -54,22 +64,22 @@ class AnomalyDetector:
         
         # Sustained Drain kontrolü
         if len(usage_data) >= self.drain_days:
-            recent_days = usage_data[-self.drain_days:]
-            drain_threshold = ma7 * self.drain_multiplier
-            consecutive_high = all(usage.mb_used > drain_threshold for usage in recent_days)
+            recent_days_drain = usage_data[-self.drain_days:]
+            drain_threshold = max(ma7 * self.drain_multiplier, 20)  # minimum 20MB threshold
+            consecutive_high = all(usage.mb_used > drain_threshold for usage in recent_days_drain)
             
             if consecutive_high and ma7 > 0:
                 anomaly = Anomaly(
                     sim_id=sim_id,
                     type=AnomalyType.SUSTAINED_DRAIN,
-                    detected_at=recent_days[-1].timestamp,
+                    detected_at=recent_days_drain[-1].timestamp,
                     severity=RiskLevel.ORANGE,
-                    reason=f"{self.drain_days} gün boyunca sürekli yüksek kullanım",
+                    reason=f"{self.drain_days} gün boyunca sürekli yüksek kullanım (ortalama: {ma7:.1f}MB, eşik: {drain_threshold:.1f}MB)",
                     evidence={
                         "days_count": self.drain_days,
                         "threshold": drain_threshold,
-                        "recent_usage": [u.mb_used for u in recent_days],
-                        "average": ma7
+                        "recent_usage": [u.mb_used for u in recent_days_drain],
+                        "baseline_average": ma7
                     }
                 )
                 anomalies.append(anomaly)
@@ -92,23 +102,28 @@ class AnomalyDetector:
             )
             anomalies.append(anomaly)
         
-        # Unexpected Roaming kontrolü
+        # Unexpected Roaming kontrolü - sadece son 2 günde
         if not device_profile.roaming_expected:
-            today_roaming = today_usage.roaming_mb if today_usage else 0
-            if today_roaming > self.roaming_threshold:
-                anomaly = Anomaly(
-                    sim_id=sim_id,
-                    type=AnomalyType.UNEXPECTED_ROAMING,
-                    detected_at=today_usage.timestamp,
-                    severity=RiskLevel.RED,
-                    reason=f"Beklenmeyen roaming kullanımı: {today_roaming}MB",
-                    evidence={
-                        "roaming_usage": today_roaming,
-                        "threshold": self.roaming_threshold,
-                        "device_allows_roaming": device_profile.roaming_expected
-                    }
-                )
-                anomalies.append(anomaly)
+            # Son 2 günde roaming kullanımı kontrol et (gerçek zamanlı analiz için)
+            two_days_ago = datetime.now() - timedelta(days=2)
+            recent_roaming_data = [u for u in recent_days if u.timestamp >= two_days_ago]
+            
+            for usage in recent_roaming_data:
+                if usage.roaming_mb > self.roaming_threshold:
+                    anomaly = Anomaly(
+                        sim_id=sim_id,
+                        type=AnomalyType.UNEXPECTED_ROAMING,
+                        detected_at=usage.timestamp,
+                        severity=RiskLevel.RED,
+                        reason=f"Beklenmeyen roaming kullanımı: {usage.roaming_mb}MB",
+                        evidence={
+                            "roaming_usage": usage.roaming_mb,
+                            "threshold": self.roaming_threshold,
+                            "device_allows_roaming": device_profile.roaming_expected
+                        }
+                    )
+                    anomalies.append(anomaly)
+                    break  # Sadece bir roaming anomalisi ekle
         
         # Risk skoru hesaplama
         risk_score = self._calculate_risk_score(anomalies)
@@ -169,12 +184,23 @@ class AnomalyDetector:
         if not anomalies:
             return "Anomali tespit edilmedi, SIM normal çalışıyor."
         
-        anomaly_types = [a.type.value for a in anomalies]
+        anomaly_types = []
+        for a in anomalies:
+            anomaly_type = a.type.value if hasattr(a.type, 'value') else str(a.type)
+            if anomaly_type not in anomaly_types:
+                anomaly_types.append(anomaly_type)
+        
         risk_level = self.get_risk_level(risk_score)
         
         summary = f"{len(anomalies)} anomali tespit edildi. "
         summary += f"Risk seviyesi: {risk_level.value.upper()}. "
         summary += f"Tespit edilen sorunlar: {', '.join(anomaly_types)}"
+        
+        # Risk seviyesine göre ek açıklama
+        if risk_level == RiskLevel.RED:
+            summary += " - Acil müdahale gerekiyor!"
+        elif risk_level == RiskLevel.ORANGE:
+            summary += " - Yakın takip öneriliyor."
         
         return summary
 

@@ -33,12 +33,3 @@ IOT_SETTINGS:
   THRESHOLDS:
     RED_RISK: 70
     ORANGE_RISK: 40
-
-# Docker/Production ayarları
-PRODUCTION:
-  ENABLE_CORS: true
-  ALLOWED_ORIGINS: 
-    - "http://127.0.0.1:3310"
-    - "http://127.0.0.1:3310"
-  ENABLE_METRICS: true
-  LOG_LEVEL: INFO

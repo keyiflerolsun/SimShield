@@ -46,6 +46,8 @@ class WhatIfRequest(BaseModel):
     """Maliyet simülasyon request"""
     plan_id: Optional[str] = None
     addons: Optional[List[str]] = []
+    scenario: Optional[str] = None  # increase_20, decrease_30, spike_day, roaming_week
+    parameters: Optional[dict] = {}
 
 class CostBreakdown(BaseModel):
     """Maliyet detayları"""
@@ -61,6 +63,11 @@ class WhatIfResponse(BaseModel):
     saving: float
     breakdown: CostBreakdown
     description: str
+    current_monthly: Optional[float] = None
+    projected_monthly: Optional[float] = None
+    cost_change: Optional[float] = None
+    risk_change: Optional[int] = 0
+    recommendations: Optional[List[str]] = []
 
 # Actions API Models
 class ActionRequest(BaseModel):

@@ -34,3 +34,10 @@ class RiskLevel(str, Enum):
     GREEN = "green"
     ORANGE = "orange"
     RED = "red"
+
+class Severity(str, Enum):
+    """Anomali önem seviyeleri"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"

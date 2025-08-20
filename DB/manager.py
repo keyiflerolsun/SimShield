@@ -14,7 +14,7 @@ class DatabaseManager:
         
     async def connect_all(self) -> Dict[str, bool]:
         """Tüm veritabanı bağlantılarını başlat"""
-        konsol.print("\n🔌 [cyan]Veritabanı bağlantıları başlatılıyor...[/]")
+        konsol.log("🔌 [cyan]Veritabanı bağlantıları başlatılıyor...[/]")
         
         results = {}
         
@@ -33,20 +33,20 @@ class DatabaseManager:
         total = len(results)
         
         if successful == total:
-            konsol.print(f"✅ [green]Tüm veritabanı bağlantıları başarılı[/] ({successful}/{total})")
+            konsol.log(f"✅ [green]Tüm veritabanı bağlantıları başarılı[/] ({successful}/{total})")
         else:
-            konsol.print(f"⚠️  [yellow]Kısmi bağlantı başarılı[/] ({successful}/{total})")
+            konsol.log(f"⚠️  [yellow]Kısmi bağlantı başarılı[/] ({successful}/{total})")
             
         return results
     
     async def disconnect_all(self):
         """Tüm veritabanı bağlantılarını kapat"""
-        konsol.print("\n🔌 [yellow]Veritabanı bağlantıları kapatılıyor...[/]")
+        konsol.log("🔌 [yellow]Veritabanı bağlantıları kapatılıyor...[/]")
         
         await self.mongodb.disconnect()
         await self.redis.disconnect()
         
-        konsol.print("✅ [green]Tüm bağlantılar kapatıldı[/]")
+        konsol.log("✅ [green]Tüm bağlantılar kapatıldı[/]")
     
     async def health_check_all(self) -> Dict[str, Any]:
         """Tüm veritabanlarının sağlık kontrolü"""

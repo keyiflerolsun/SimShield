@@ -14,25 +14,26 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        konsol.print(f"✅ [green]WebSocket kabul edildi. Aktif bağlantı sayısı:[/] {len(self.active_connections)}")
+        konsol.log(f"✅ [green]WebSocket kabul edildi. Aktif bağlantı sayısı:[/] {len(self.active_connections)}")
 
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
-            konsol.print(f"🔌 [red]WebSocket bağlantısı kaldırıldı. Aktif bağlantı sayısı:[/] {len(self.active_connections)}")
+            konsol.log(f"🔌 [red]WebSocket bağlantısı kaldırıldı. Aktif bağlantı sayısı:[/] {len(self.active_connections)}")
 
     async def broadcast(self, message: str):
         if not self.active_connections:
-            konsol.print("📡 [yellow]Broadcast edilecek aktif WebSocket bağlantısı yok[/]")
+            konsol.log("📡 [yellow]Broadcast edilecek aktif WebSocket bağlantısı yok[/]")
             return
             
-        konsol.print(f"📡 [cyan]Broadcast mesajı:[/] {message} [yellow]({len(self.active_connections)} bağlantıya)[/]")
+        konsol.log(f"📡 [yellow]{len(self.active_connections)} bağlantıya broadcast edildi[/]")
+        konsol.print(message)
         for connection in self.active_connections:
             try:
                 await connection.send_text(message)
             except:
                 self.active_connections.remove(connection)
-                konsol.print("❌ [red]Bozuk WebSocket bağlantısı kaldırıldı[/]")
+                konsol.log("❌ [red]Bozuk WebSocket bağlantısı kaldırıldı[/]")
 
 manager = ConnectionManager()
 

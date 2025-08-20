@@ -24,52 +24,53 @@
 
     <!-- İstatistikler -->
     <div class="stats-grid">
-      <div class="stat-item">
+      <div class="stat-item clickable-stat" data-filter="all" title="Tüm SIM'leri göster">
         <div class="stat-value" id="total-sims">-</div>
         <div class="stat-label">Toplam SIM</div>
       </div>
-      <div class="stat-item">
+      <div class="stat-item clickable-stat" data-filter="active" title="Sadece aktif SIM'leri göster">
         <div class="stat-value" id="active-sims">-</div>
         <div class="stat-label">Aktif</div>
       </div>
-      <div class="stat-item">
+      <div class="stat-item clickable-stat" data-filter="high-risk" title="Sadece yüksek riskli SIM'leri göster">
         <div class="stat-value" id="high-risk-sims">-</div>
         <div class="stat-label">Yüksek Risk</div>
       </div>
-      <div class="stat-item">
+      <div class="stat-item clickable-stat" data-filter="anomaly" title="Sadece anomalili SIM'leri göster">
         <div class="stat-value" id="anomaly-count">-</div>
         <div class="stat-label">Anomali</div>
       </div>
     </div>
 
     <div class="grid">
-      <div class="card">
-        <div class="section-title">SIM Filosu</div>
-        
-        <!-- Arama ve Filtreler -->
-        <input type="text" class="search-box" id="search-input" placeholder="SIM ID veya cihaz türü ara...">
-        
-        <div class="filter-row">
-          <select class="filter-select" id="risk-filter">
-            <option value="">Tüm Risk</option>
-            <option value="red">Yüksek</option>
-            <option value="orange">Orta</option>
-            <option value="green">Düşük</option>
-          </select>
-          <select class="filter-select" id="status-filter">
-            <option value="">Tüm Durum</option>
-            <option value="active">Aktif</option>
-            <option value="blocked">Engelli</option>
-            <option value="suspended">Askıda</option>
-          </select>
-          <select class="filter-select" id="city-filter">
-            <option value="">Tüm Şehir</option>
-          </select>
+      <div class="left-panel">
+        <div class="card fleet-card">
+          <div class="section-title">SIM Filosu</div>
+          
+          <!-- Arama ve Filtreler -->
+          <input type="text" class="search-box" id="search-input" placeholder="SIM ID veya cihaz türü ara...">
+          
+          <div class="filter-row">
+            <select class="filter-select" id="risk-filter">
+              <option value="">Tüm Risk</option>
+              <option value="red">Yüksek</option>
+              <option value="orange">Orta</option>
+              <option value="green">Düşük</option>
+            </select>
+            <select class="filter-select" id="status-filter">
+              <option value="">Tüm Durum</option>
+              <option value="active">Aktif</option>
+              <option value="blocked">Engelli</option>
+              <option value="suspended">Askıda</option>
+            </select>
+            <select class="filter-select" id="city-filter">
+              <option value="">Tüm Şehir</option>
+            </select>
+          </div>
+          
+          <div class="muted">Listeden bir SIM seçin — sağ panelde detay gözükecek.</div>
+          <div class="list" id="fleet-list">Yükleniyor...</div>
         </div>
-        
-        <div class="muted">Listeden bir SIM seçin — sağ panelde detay gözükecek.</div>
-        <div style="height:12px"></div>
-        <div class="list" id="fleet-list">Yükleniyor...</div>
       </div>
 
       <div class="card">
@@ -82,6 +83,14 @@
           <div>
             <button id="analyze-btn" class="secondary" disabled>🔍 Analiz Çalıştır</button>
           </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <!-- SIM Bilgileri -->
+        <div class="section-title">SIM Bilgileri</div>
+        <div class="sim-details" id="sim-details">
+          <div class="muted">SIM seçildiğinde detaylar gözükecek</div>
         </div>
 
         <div style="height:12px"></div>
@@ -101,6 +110,7 @@
           <button id="throttle-btn" disabled>🐌 Hız Düşür</button>
           <button id="notify-btn" disabled>📢 Uyarı Gönder</button>
           <button id="best-options-btn" class="secondary" disabled>💡 En İyi Seçenekler</button>
+          <button id="whatif-btn" class="secondary" disabled>🔮 Simülasyon</button>
         </div>
 
         <div style="height:12px"></div>
