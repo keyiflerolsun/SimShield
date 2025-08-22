@@ -1,0 +1,89 @@
+{
+  "anomaly_scenarios": {
+    "2001": {
+      "type": "spike", 
+      "day": 28, 
+      "factor": 15,
+      "description": "Ani kullanım artışı - Bugün için"
+    },
+    "2002": {
+      "type": "drain", 
+      "start_day": 26, 
+      "duration": 4, 
+      "factor": 4,
+      "description": "Sürekli yüksek kullanım - Son 4 gün"
+    },
+    "2003": {
+      "type": "inactivity", 
+      "start_day": 27, 
+      "duration": 3,
+      "description": "İnaktivite - Son 3 gün"
+    },
+    "2004": {
+      "type": "roaming", 
+      "day": 29, 
+      "roaming_mb": 150,
+      "description": "Beklenmeyen roaming - Dün"
+    },
+    "2006": {
+      "type": "spike", 
+      "day": 29, 
+      "factor": 12,
+      "description": "Ani kullanım artışı - Dün"
+    },
+    "2008": {
+      "type": "drain", 
+      "start_day": 25, 
+      "duration": 5, 
+      "factor": 5,
+      "description": "Kamera sürekli yüksek kullanım - Son 5 gün"
+    },
+    "2012": {
+      "type": "roaming", 
+      "day": 28, 
+      "roaming_mb": 300,
+      "description": "Tracker roaming (beklenen) - Bugün"
+    },
+    "2011": {
+      "type": "spike", 
+      "day": 27, 
+      "factor": 20,
+      "description": "Aşırı kullanım artışı - 2 gün önce"
+    },
+    "2099": {
+      "type": "critical_multi",
+      "description": "YÜKSEK RİSKLİ - Çoklu anomali",
+      "scenarios": [
+        {
+          "type": "extreme_spike", 
+          "day": 29, 
+          "factor": 25,
+          "description": "Çok yüksek spike - Dün"
+        },
+        {
+          "type": "sustained_drain", 
+          "start_day": 25, 
+          "duration": 5, 
+          "factor": 8,
+          "description": "Sürekli çok yüksek kullanım"
+        },
+        {
+          "type": "roaming", 
+          "day": 28, 
+          "roaming_mb": 500,
+          "description": "Yüksek roaming - Bugün"
+        }
+      ]
+    }
+  },
+  "_metadata": {
+    "description": "30 günlük kullanım verisi için anomali senaryoları",
+    "usage_days": 30,
+    "base_date_offset": -30,
+    "risk_levels": {
+      "low": "0-39 points",
+      "medium": "40-69 points", 
+      "high": "70+ points"
+    }
+  }
+}

@@ -15,16 +15,16 @@ async def lifespan(app: FastAPI):
     connection_results = await db_manager.connect_all()
     
     if not connection_results.get("mongodb", False):
-        konsol.print("⚠️  [yellow]MongoDB bağlantısı başarısız, bazı özellikler çalışmayabilir[/]")
+        konsol.log("⚠️  [yellow]MongoDB bağlantısı başarısız, bazı özellikler çalışmayabilir[/]")
     
     if not connection_results.get("redis", False):
-        konsol.print("⚠️  [yellow]Redis bağlantısı başarısız, önbellekleme devre dışı[/]")
+        konsol.log("⚠️  [yellow]Redis bağlantısı başarısız, önbellekleme devre dışı[/]")
     
-    konsol.print("✅ [green]Başlangıç tamamlandı[/]")
+    konsol.log("✅ [green]Başlangıç tamamlandı[/]")
     
     yield
     
     # Kapanış
-    konsol.print("🔄 [yellow]SimShield kapatılıyor...[/]")
+    konsol.log("🔄 [yellow]SimShield kapatılıyor...[/]")
     await db_manager.disconnect_all()
     konsol.log("✅ [green]Güvenli kapanış tamamlandı[/]")

@@ -1,0 +1,147 @@
+[
+  {
+    "sim_id": "2001", 
+    "customer_id": "9001", 
+    "device_type": "POS", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "active", 
+    "city": "Istanbul"
+  },
+  {
+    "sim_id": "2002", 
+    "customer_id": "9001", 
+    "device_type": "SmartMeter", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "active", 
+    "city": "Ankara"
+  },
+  {
+    "sim_id": "2003", 
+    "customer_id": "9001", 
+    "device_type": "Tracker", 
+    "apn": "apn-iot", 
+    "plan_id": "12", 
+    "status": "active", 
+    "city": "Izmir"
+  },
+  {
+    "sim_id": "2004", 
+    "customer_id": "9001", 
+    "device_type": "Camera", 
+    "apn": "apn-video", 
+    "plan_id": "13", 
+    "status": "active", 
+    "city": "Bursa"
+  },
+  {
+    "sim_id": "2005", 
+    "customer_id": "9001", 
+    "device_type": "Sensor", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "blocked", 
+    "city": "Antalya"
+  },
+  {
+    "sim_id": "2006", 
+    "customer_id": "9002", 
+    "device_type": "POS", 
+    "apn": "apn-iot", 
+    "plan_id": "12", 
+    "status": "active", 
+    "city": "Adana"
+  },
+  {
+    "sim_id": "2007", 
+    "customer_id": "9002", 
+    "device_type": "Tracker", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "active", 
+    "city": "Gaziantep"
+  },
+  {
+    "sim_id": "2008", 
+    "customer_id": "9003", 
+    "device_type": "Camera", 
+    "apn": "apn-video", 
+    "plan_id": "13", 
+    "status": "active", 
+    "city": "Konya"
+  },
+  {
+    "sim_id": "2009", 
+    "customer_id": "9003", 
+    "device_type": "SmartMeter", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "active", 
+    "city": "Mersin"
+  },
+  {
+    "sim_id": "2010", 
+    "customer_id": "9004", 
+    "device_type": "Sensor", 
+    "apn": "apn-iot", 
+    "plan_id": "12", 
+    "status": "active", 
+    "city": "Eskisehir"
+  },
+  {
+    "sim_id": "2011", 
+    "customer_id": "9004", 
+    "device_type": "POS", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "suspended", 
+    "city": "Samsun"
+  },
+  {
+    "sim_id": "2012", 
+    "customer_id": "9005", 
+    "device_type": "Tracker", 
+    "apn": "apn-iot", 
+    "plan_id": "12", 
+    "status": "active", 
+    "city": "Trabzon"
+  },
+  {
+    "sim_id": "2013", 
+    "customer_id": "9005", 
+    "device_type": "Camera", 
+    "apn": "apn-video", 
+    "plan_id": "13", 
+    "status": "active", 
+    "city": "Diyarbakir"
+  },
+  {
+    "sim_id": "2014", 
+    "customer_id": "9006", 
+    "device_type": "SmartMeter", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "active", 
+    "city": "Malatya"
+  },
+  {
+    "sim_id": "2015", 
+    "customer_id": "9006", 
+    "device_type": "Sensor", 
+    "apn": "apn-iot", 
+    "plan_id": "11", 
+    "status": "active", 
+    "city": "Van"
+  },
+  {
+    "sim_id": "2099", 
+    "customer_id": "9007", 
+    "device_type": "Camera", 
+    "apn": "apn-video", 
+    "plan_id": "13", 
+    "status": "active", 
+    "city": "Istanbul",
+    "_note": "YÜKSEK RİSKLİ SIM - Test için özel anomali senaryoları"
+  }
+]

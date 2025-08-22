@@ -14,133 +14,209 @@
         SimShield IoT Fleet Dashboard
       </h1>
       <div class="controls">
-        <div class="connection-status">
-          <span class="status-dot" id="ws-dot"></span>
-          <span id="ws-status">Bağlanıyor...</span>
+        <div class="header-panels">
+          <button id="alerts-btn" class="alerts-btn" title="Canlı uyarıları göster">🔴 Uyarılar <span class="alerts-count" id="alerts-count">0</span></button>
+          <button id="actions-btn" class="actions-btn" title="Oturum geçmişini göster">🗂️ Geçmiş</button>
         </div>
-        <button id="refresh">🔄 Yenile</button>
+        
+        <div class="connection-status-panel">
+          <div class="connection-item">
+            <span class="status-dot" id="ws-dot"></span>
+            <span id="ws-status">bağlanıyor...</span>
+            <small style="color: var(--muted); margin-left: 4px;">WebSocket</small>
+          </div>
+          <div class="connection-item">
+            <span class="status-dot api-dot connected" id="api-dot"></span>
+            <span id="api-status">bağlanıyor...</span>
+            <small style="color: var(--muted); margin-left: 4px;">REST API</small>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <button id="refresh" title="Filo verilerini yenile">🔄 Filo Yenile</button>
+          <button id="analyze-all-btn" class="secondary" title="Filodaki tüm SIM kartlarını toplu olarak analiz et">🔍 Tüm SIM'leri Analiz Et</button>
+        </div>
       </div>
     </header>
 
-    <!-- İstatistikler -->
-    <div class="stats-grid">
-      <div class="stat-item clickable-stat" data-filter="all" title="Tüm SIM'leri göster">
-        <div class="stat-value" id="total-sims">-</div>
-        <div class="stat-label">Toplam SIM</div>
+    <!-- Ana Konteyner -->
+    <div class="main-container">
+      <!-- İstatistikler -->
+      <div class="stats-grid">
+        <div class="stat-item clickable-stat" data-filter="all" title="Tüm SIM'leri göster">
+          <div class="stat-value" id="total-sims">-</div>
+          <div class="stat-label">Toplam SIM</div>
+        </div>
+        <div class="stat-item clickable-stat" data-filter="active" title="Sadece aktif SIM'leri göster">
+          <div class="stat-value" id="active-sims">-</div>
+          <div class="stat-label">Aktif</div>
+        </div>
+        <div class="stat-item clickable-stat" data-filter="high-risk" title="Sadece yüksek riskli SIM'leri göster">
+          <div class="stat-value" id="high-risk-sims">-</div>
+          <div class="stat-label">Yüksek Risk</div>
+        </div>
+        <div class="stat-item clickable-stat" data-filter="anomaly" title="Sadece anomalili SIM'leri göster">
+          <div class="stat-value" id="anomaly-count">-</div>
+          <div class="stat-label">Anomali</div>
+        </div>
       </div>
-      <div class="stat-item clickable-stat" data-filter="active" title="Sadece aktif SIM'leri göster">
-        <div class="stat-value" id="active-sims">-</div>
-        <div class="stat-label">Aktif</div>
-      </div>
-      <div class="stat-item clickable-stat" data-filter="high-risk" title="Sadece yüksek riskli SIM'leri göster">
-        <div class="stat-value" id="high-risk-sims">-</div>
-        <div class="stat-label">Yüksek Risk</div>
-      </div>
-      <div class="stat-item clickable-stat" data-filter="anomaly" title="Sadece anomalili SIM'leri göster">
-        <div class="stat-value" id="anomaly-count">-</div>
-        <div class="stat-label">Anomali</div>
+
+      <div class="grid">
+        <div class="left-panel">
+          <div class="card fleet-card">
+            <div class="section-title">SIM Filosu</div>
+            
+            <!-- Arama ve Filtreler -->
+            <input type="text" class="search-box" id="search-input" placeholder="SIM ID veya cihaz türü ara...">
+            
+            <div class="filter-row">
+              <select class="filter-select" id="risk-filter">
+                <option value="">Tüm Risk</option>
+                <option value="red">Yüksek</option>
+                <option value="orange">Orta</option>
+                <option value="green">Düşük</option>
+              </select>
+              <select class="filter-select" id="status-filter">
+                <option value="">Tüm Durum</option>
+                <option value="active">Aktif</option>
+                <option value="blocked">Engelli</option>
+                <option value="suspended">Askıda</option>
+              </select>
+              <select class="filter-select" id="city-filter">
+                <option value="">Tüm Şehir</option>
+              </select>
+            </div>
+            
+            <div class="muted">Listeden bir SIM seçin — sağ panelde detay gözükecek.</div>
+            <div class="list" id="fleet-list">Yükleniyor...</div>
+          </div>
+        </div>
+
+        <div class="card sim-detail-card">
+          <!-- Header -->
+          <div class="sim-detail-header">
+            <div class="sim-detail-title">
+              <div class="section-title">SIM Detayı</div>
+              <div id="selected-sim-name" class="sim-name">Hiçbir SIM seçilmedi</div>
+              <div id="selected-sim-meta" class="sim-meta">—</div>
+            </div>
+            <div class="sim-header-actions">
+              <button id="analyze-btn" class="secondary" disabled title="Seçili SIM kartını detaylı analiz et">🔍 Analiz Et</button>
+            </div>
+          </div>
+
+          <!-- Sticky Actions Toolbar -->
+          <div class="sticky-actions-toolbar" id="sticky-actions">
+            <div class="actions-label">Hızlı Aksiyonlar:</div>
+            <div class="actions-buttons">
+              <button id="notify-btn" class="action-btn action-notify" disabled title="Uyarı bildirimi gönder">
+                📢 <span class="action-text">Bildir</span>
+              </button>
+              <button id="throttle-btn" class="action-btn action-throttle" disabled title="Bağlantı hızını sınırla">
+                🐌 <span class="action-text">Yavaşlat</span>
+              </button>
+              <button id="freeze-btn" class="action-btn action-freeze danger" disabled title="24 saat boyunca dondur">
+                ❄️ <span class="action-text">Dondur</span>
+              </button>
+              <button id="best-options-btn" class="action-btn action-best secondary" disabled title="En iyi seçenekleri analiz et">
+                💡 <span class="action-text">Seçenekler</span>
+              </button>
+              <button id="whatif-btn" class="action-btn action-whatif secondary" disabled title="Simülasyon senaryoları">
+                🔮 <span class="action-text">Simülasyon</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="overview">📊 Genel Bakış</button>
+            <button class="tab-btn" data-tab="charts">📈 Kullanım Grafiği</button>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="tab-content">
+            <!-- Overview Tab -->
+            <div class="tab-pane active" id="tab-overview">
+              <!-- Anomaly Alert Section (only shows when anomalies exist) -->
+              <div class="anomaly-alert-section" id="anomaly-alert-section" style="display: none;">
+                <div class="anomaly-alert-header">
+                  <span class="anomaly-icon">⚠️</span>
+                  <span class="anomaly-title">Anomali Tespit Edildi!</span>
+                  <span class="anomaly-count" id="anomaly-count-badge">0</span>
+                </div>
+                <div class="anomaly-alert-content" id="anomaly-alert-content">
+                  <!-- Dynamic anomaly content will be inserted here -->
+                </div>
+              </div>
+
+              <!-- SIM Details -->
+              <div class="sim-details" id="sim-details">
+                <div class="muted">SIM seçildiğinde detaylar gözükecek</div>
+              </div>
+            </div>
+
+            <!-- Charts Tab -->
+            <div class="tab-pane" id="tab-charts">
+              <div class="section-subtitle">30 Gün Kullanım Trendi</div>
+              <div class="chart" id="usage-chart">
+                <div class="muted">SIM seçildiğinde grafik gözükecek</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="left-panel">
-        <div class="card fleet-card">
-          <div class="section-title">SIM Filosu</div>
-          
-          <!-- Arama ve Filtreler -->
-          <input type="text" class="search-box" id="search-input" placeholder="SIM ID veya cihaz türü ara...">
-          
-          <div class="filter-row">
-            <select class="filter-select" id="risk-filter">
-              <option value="">Tüm Risk</option>
-              <option value="red">Yüksek</option>
-              <option value="orange">Orta</option>
-              <option value="green">Düşük</option>
-            </select>
-            <select class="filter-select" id="status-filter">
-              <option value="">Tüm Durum</option>
-              <option value="active">Aktif</option>
-              <option value="blocked">Engelli</option>
-              <option value="suspended">Askıda</option>
-            </select>
-            <select class="filter-select" id="city-filter">
-              <option value="">Tüm Şehir</option>
-            </select>
-          </div>
-          
-          <div class="muted">Listeden bir SIM seçin — sağ panelde detay gözükecek.</div>
-          <div class="list" id="fleet-list">Yükleniyor...</div>
+    <!-- Floating Panels -->
+    
+    <!-- Canlı Uyarılar Paneli -->
+    <div class="floating-panel" id="alerts-panel">
+      <div class="floating-panel-header">
+        <h3>🔴 Canlı Uyarılar</h3>
+        <div class="floating-panel-controls">
+          <div class="alerts-count-panel" id="alerts-count-panel">0</div>
+          <button class="toggle-sound-btn-panel" id="toggle-sound-panel" title="Ses bildirimleri">🔊</button>
+          <button class="close-btn" id="close-alerts">×</button>
         </div>
       </div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div class="section-title">SIM Detayı</div>
-            <div id="selected-sim-name" style="font-size:16px;font-weight:600">Hiçbir SIM seçilmedi</div>
-            <div id="selected-sim-meta" class="muted">—</div>
-          </div>
-          <div>
-            <button id="analyze-btn" class="secondary" disabled>🔍 Analiz Çalıştır</button>
+      <div class="floating-panel-content">
+        <div class="alerts-list-panel" id="alerts-list-panel">
+          <div class="alert-placeholder">
+            <div class="alert-placeholder-icon">📡</div>
+            <div class="alert-placeholder-text">WebSocket bağlantısı bekleniyor...</div>
           </div>
         </div>
+      </div>
+      <div class="floating-panel-footer">
+        <button class="clear-alerts-btn" id="clear-alerts-panel">🗑️ Tümünü Temizle</button>
+        <button class="export-alerts-btn" id="export-alerts">📤 Dışa Aktar</button>
+      </div>
+    </div>
 
-        <div style="height:12px"></div>
-
-        <!-- SIM Bilgileri -->
-        <div class="section-title">SIM Bilgileri</div>
-        <div class="sim-details" id="sim-details">
-          <div class="muted">SIM seçildiğinde detaylar gözükecek</div>
+    <!-- Oturum Geçmişi Paneli -->
+    <div class="floating-panel" id="actions-panel">
+      <div class="floating-panel-header">
+        <h3>🗂️ Oturum İşlem Geçmişi</h3>
+        <div class="floating-panel-controls">
+          <button class="close-btn" id="close-actions">×</button>
         </div>
-
-        <div style="height:12px"></div>
-        
-        <!-- Kullanım Grafiği -->
-        <div class="section-title">30 Gün Kullanım Trendi</div>
-        <div class="chart" id="usage-chart">
-          <div class="muted">SIM seçildiğinde grafik gözükecek</div>
+      </div>
+      <div class="floating-panel-content">
+        <div class="actions-log-panel" id="actions-log-panel">
+          <div class="action-placeholder">
+            <div class="action-placeholder-icon">📋</div>
+            <div class="action-placeholder-text">Henüz işlem yapılmadı<br>SIM işlemleri burada görünecek</div>
+          </div>
         </div>
-
-        <div style="height:12px"></div>
-        
-        <!-- Hızlı Aksiyonlar -->
-        <div class="section-title">Hızlı Aksiyonlar</div>
-        <div class="actions">
-          <button id="freeze-btn" class="danger" disabled>❄️ 24s Dondur</button>
-          <button id="throttle-btn" disabled>🐌 Hız Düşür</button>
-          <button id="notify-btn" disabled>📢 Uyarı Gönder</button>
-          <button id="best-options-btn" class="secondary" disabled>💡 En İyi Seçenekler</button>
-          <button id="whatif-btn" class="secondary" disabled>🔮 Simülasyon</button>
-        </div>
-
-        <div style="height:12px"></div>
-        
-        <!-- Anomali Analizi -->
-        <div class="section-title">Anomali Analizi</div>
-        <div class="analysis-section" id="anomaly-analysis">
-          <div class="muted">SIM seçildiğinde anomali analizi gözükecek</div>
-        </div>
-
-        <div style="height:12px"></div>
-        
-        <!-- İşlem Geçmişi -->
-        <div class="section-title">İşlem Geçmişi</div>
-        <div class="log" id="actions-log">
-          <div class="muted">Henüz işlem yok.</div>
-        </div>
-
-        <div style="height:12px"></div>
-        
-        <!-- Canlı Uyarılar -->
-        <div class="section-title">Canlı Uyarılar</div>
-        <div class="log" id="alerts-log">
-          <div class="muted">WebSocket bağlantısı bekleniyor...</div>
-        </div>
+      </div>
+      <div class="floating-panel-footer">
+        <button class="clear-actions-btn" id="clear-actions-panel">🗑️ Geçmişi Temizle</button>
+        <button class="export-actions-btn" id="export-actions">📤 Dışa Aktar</button>
       </div>
     </div>
 
     <footer>
-      SimShield IoT Fleet Guardian • Backend API: <code id="api-status">bağlanıyor...</code>
+      SimShield IoT Fleet Guardian © 2025
     </footer>
   </div>
 

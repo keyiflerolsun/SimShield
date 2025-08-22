@@ -1,0 +1,42 @@
+[
+  {
+    "plan_id": "11", 
+    "plan_name": "IoT Basic 500MB", 
+    "monthly_quota_mb": 500, 
+    "monthly_price": 39.9, 
+    "overage_per_mb": 0.20, 
+    "apn": "apn-iot"
+  },
+  {
+    "plan_id": "12", 
+    "plan_name": "IoT Plus 2GB", 
+    "monthly_quota_mb": 2048, 
+    "monthly_price": 79.9, 
+    "overage_per_mb": 0.15, 
+    "apn": "apn-iot"
+  },
+  {
+    "plan_id": "13", 
+    "plan_name": "Video Cam 10GB", 
+    "monthly_quota_mb": 10240, 
+    "monthly_price": 129.9, 
+    "overage_per_mb": 0.10, 
+    "apn": "apn-video"
+  },
+  {
+    "plan_id": "14", 
+    "plan_name": "IoT Enterprise 5GB", 
+    "monthly_quota_mb": 5120, 
+    "monthly_price": 159.9, 
+    "overage_per_mb": 0.12, 
+    "apn": "apn-iot"
+  },
+  {
+    "plan_id": "15", 
+    "plan_name": "IoT Micro 100MB", 
+    "monthly_quota_mb": 100, 
+    "monthly_price": 19.9, 
+    "overage_per_mb": 0.25, 
+    "apn": "apn-iot"
+  }
+]

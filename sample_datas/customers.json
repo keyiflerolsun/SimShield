@@ -1,0 +1,44 @@
+[
+  {
+    "customer_id": "9001", 
+    "company_name": "TechnoMart AŞ", 
+    "contact_email": "teknik@technomart.com.tr", 
+    "sector": "Retail"
+  },
+  {
+    "customer_id": "9002", 
+    "company_name": "Güney Lojistik Ltd", 
+    "contact_email": "operasyon@guneylojistik.com", 
+    "sector": "Logistics"
+  },
+  {
+    "customer_id": "9003", 
+    "company_name": "Akıllı Şehir Teknolojileri", 
+    "contact_email": "destek@akillisehir.gov.tr", 
+    "sector": "Municipality"
+  },
+  {
+    "customer_id": "9004", 
+    "company_name": "Enerji İzleme Sistemleri", 
+    "contact_email": "sistem@energiizleme.com", 
+    "sector": "Energy"
+  },
+  {
+    "customer_id": "9005", 
+    "company_name": "Güvenlik Kamera Sistemleri", 
+    "contact_email": "teknik@guvenlikkamera.com", 
+    "sector": "Security"
+  },
+  {
+    "customer_id": "9006", 
+    "company_name": "Çevre İzleme Merkezi", 
+    "contact_email": "veri@cevreizleme.org", 
+    "sector": "Environment"
+  },
+  {
+    "customer_id": "9007", 
+    "company_name": "Kritik Güvenlik Sistemleri", 
+    "contact_email": "alarm@kritikguvenlik.com", 
+    "sector": "Critical Security"
+  }
+]

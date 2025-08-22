@@ -38,5 +38,6 @@ from .api import (
 from .websocket import (
     AlertMessage,
     ConnectionStatus,
-    BroadcastMessage
+    BroadcastMessage,
+    AnomalyDetail
 )

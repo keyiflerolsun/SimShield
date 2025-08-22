@@ -1,0 +1,37 @@
+[
+  {
+    "device_type": "POS", 
+    "expected_daily_mb_min": 5, 
+    "expected_daily_mb_max": 25, 
+    "roaming_expected": false,
+    "description": "Point of Sale terminalleri - Düşük veri kullanımı, günlük işlem kayıtları"
+  },
+  {
+    "device_type": "SmartMeter", 
+    "expected_daily_mb_min": 1, 
+    "expected_daily_mb_max": 10, 
+    "roaming_expected": false,
+    "description": "Akıllı sayaçlar - Çok düşük veri, saatlik ölçüm raporları"
+  },
+  {
+    "device_type": "Tracker", 
+    "expected_daily_mb_min": 10, 
+    "expected_daily_mb_max": 60, 
+    "roaming_expected": true,
+    "description": "GPS takip cihazları - Orta veri kullanımı, konum güncellemeleri"
+  },
+  {
+    "device_type": "Camera", 
+    "expected_daily_mb_min": 200, 
+    "expected_daily_mb_max": 800, 
+    "roaming_expected": false,
+    "description": "Güvenlik kameraları - Yüksek veri kullanımı, video akışı"
+  },
+  {
+    "device_type": "Sensor", 
+    "expected_daily_mb_min": 1, 
+    "expected_daily_mb_max": 5, 
+    "roaming_expected": false,
+    "description": "IoT sensörler - En düşük veri kullanımı, çevresel ölçümler"
+  }
+]

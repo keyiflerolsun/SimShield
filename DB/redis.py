@@ -35,15 +35,15 @@ class RedisManager:
             await self.client.ping()
             self.is_connected = True
             
-            konsol.print("✅ [green]Redis bağlantısı başarılı[/]")
+            konsol.log("✅ [green]Redis bağlantısı başarılı[/]")
             return True
             
         except (ConnectionError, TimeoutError) as e:
-            konsol.print(f"❌ [red]Redis bağlantı hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis bağlantı hatası:[/] {e}")
             self.is_connected = False
             return False
         except Exception as e:
-            konsol.print(f"❌ [red]Redis beklenmeyen hata:[/] {e}")
+            konsol.log(f"❌ [red]Redis beklenmeyen hata:[/] {e}")
             self.is_connected = False
             return False
     
@@ -52,7 +52,7 @@ class RedisManager:
         if self.client:
             await self.client.close()
             self.is_connected = False
-            konsol.print("🔌 [yellow]Redis bağlantısı kapatıldı[/]")
+            konsol.log("🔌 [yellow]Redis bağlantısı kapatıldı[/]")
     
     async def health_check(self) -> Dict[str, Any]:
         """Redis sağlık kontrolü"""
@@ -93,7 +93,7 @@ class RedisManager:
             await self.client.setex(key, expire_seconds, serialized_value)
             return True
         except Exception as e:
-            konsol.print(f"❌ [red]Redis cache set hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis cache set hatası:[/] {e}")
             return False
     
     async def get_cache(self, key: str) -> Optional[Any]:
@@ -112,7 +112,7 @@ class RedisManager:
             except json.JSONDecodeError:
                 return value
         except Exception as e:
-            konsol.print(f"❌ [red]Redis cache get hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis cache get hatası:[/] {e}")
             return None
     
     async def delete_cache(self, key: str) -> bool:
@@ -124,7 +124,7 @@ class RedisManager:
             await self.client.delete(key)
             return True
         except Exception as e:
-            konsol.print(f"❌ [red]Redis cache delete hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis cache delete hatası:[/] {e}")
             return False
     
     async def exists_cache(self, key: str) -> bool:
@@ -135,7 +135,7 @@ class RedisManager:
         try:
             return bool(await self.client.exists(key))
         except Exception as e:
-            konsol.print(f"❌ [red]Redis cache exists hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis cache exists hatası:[/] {e}")
             return False
     
     # Rate Limiting
@@ -172,7 +172,7 @@ class RedisManager:
                     "reset_time": window_start + window_seconds
                 }
         except Exception as e:
-            konsol.print(f"❌ [red]Redis rate limit hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis rate limit hatası:[/] {e}")
             return {"allowed": True, "remaining": limit, "reset_time": 0}
     
     # Session Management
@@ -216,7 +216,7 @@ class RedisManager:
                 }
             }
         except Exception as e:
-            konsol.print(f"❌ [red]Redis stats hatası:[/] {e}")
+            konsol.log(f"❌ [red]Redis stats hatası:[/] {e}")
             return {}
 
 # Global Redis manager instance

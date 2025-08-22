@@ -37,15 +37,15 @@ class MongoDBManager:
             await self.client.admin.command('ping')
             self.is_connected = True
             
-            konsol.print("✅ [green]MongoDB bağlantısı başarılı[/]")
+            konsol.log("✅ [green]MongoDB bağlantısı başarılı[/]")
             return True
             
         except (ConnectionFailure, ServerSelectionTimeoutError) as e:
-            konsol.print(f"❌ [red]MongoDB bağlantı hatası:[/] {e}")
+            konsol.log(f"❌ [red]MongoDB bağlantı hatası:[/] {e}")
             self.is_connected = False
             return False
         except Exception as e:
-            konsol.print(f"❌ [red]MongoDB beklenmeyen hata:[/] {e}")
+            konsol.log(f"❌ [red]MongoDB beklenmeyen hata:[/] {e}")
             self.is_connected = False
             return False
     
@@ -54,7 +54,7 @@ class MongoDBManager:
         if self.client:
             await self.client.close()
             self.is_connected = False
-            konsol.print("🔌 [yellow]MongoDB bağlantısı kapatıldı[/]")
+            konsol.log("🔌 [yellow]MongoDB bağlantısı kapatıldı[/]")
     
     def get_collection(self, collection_name: str):
         """MongoDB koleksiyonunu döndür"""
@@ -112,11 +112,11 @@ class MongoDBManager:
             await actions_collection.create_index([("sim_id", 1), ("created_at", -1)])
             await actions_collection.create_index("action_id", unique=True)
             
-            konsol.print("✅ [green]MongoDB index'ler oluşturuldu[/]")
+            konsol.log("✅ [green]MongoDB index'ler oluşturuldu[/]")
             return True
             
         except Exception as e:
-            konsol.print(f"❌ [red]MongoDB index oluşturma hatası:[/] {e}")
+            konsol.log(f"❌ [red]MongoDB index oluşturma hatası:[/] {e}")
             return False
     
     async def get_stats(self) -> Dict[str, Any]:
@@ -135,7 +135,7 @@ class MongoDBManager:
             
             return stats
         except Exception as e:
-            konsol.print(f"❌ [red]MongoDB stats hatası:[/] {e}")
+            konsol.log(f"❌ [red]MongoDB stats hatası:[/] {e}")
             return {}
 
 # Global MongoDB manager instance

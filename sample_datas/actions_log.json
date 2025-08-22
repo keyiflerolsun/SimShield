@@ -1,0 +1,42 @@
+[
+  {
+    "action_id": "A-001", 
+    "sim_id": "2001", 
+    "action": "freeze_24h", 
+    "reason": "sudden_spike", 
+    "actor": "system", 
+    "status": "completed",
+    "description": "Ani kullanım artışı tespit edildi, 24 saat dondurma uygulandı",
+    "days_ago": 2
+  },
+  {
+    "action_id": "A-002", 
+    "sim_id": "2004", 
+    "action": "throttle", 
+    "reason": "unexpected_roaming", 
+    "actor": "operator", 
+    "status": "completed",
+    "description": "Beklenmeyen roaming tespit edildi, hız sınırlaması uygulandı",
+    "days_ago": 1
+  },
+  {
+    "action_id": "A-003", 
+    "sim_id": "2003", 
+    "action": "notify", 
+    "reason": "inactivity", 
+    "actor": "system", 
+    "status": "pending",
+    "description": "Uzun süreli inaktivite tespit edildi, müşteri bilgilendirme bekleniyor",
+    "hours_ago": 6
+  },
+  {
+    "action_id": "A-004", 
+    "sim_id": "2099", 
+    "action": "urgent_review", 
+    "reason": "critical_multiple_anomalies", 
+    "actor": "system", 
+    "status": "pending",
+    "description": "Kritik seviyede çoklu anomali tespit edildi, acil inceleme gerekli",
+    "hours_ago": 1
+  }
+]

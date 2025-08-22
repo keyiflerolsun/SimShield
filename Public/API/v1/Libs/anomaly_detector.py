@@ -26,26 +26,35 @@ class AnomalyDetector:
         if len(usage_data) < 7:
             return anomalies, 0
             
-        # Son 7 günün ortalaması ve standart sapması (son 3 günü hariç tut, çünkü onlarda anomali olabilir)
+        # Son günlerin ortalaması ve standart sapması (daha esnek baseline)
         if len(usage_data) >= 10:
             # Son 10 günden son 3'ü hariç ilk 7'sini al (baseline için)
             baseline_data = usage_data[-10:-3]
+        elif len(usage_data) >= 7:
+            # 7-9 gün arası varsa, ilk yarısını baseline yap
+            baseline_data = usage_data[:len(usage_data)//2]
         else:
-            baseline_data = usage_data[:-3] if len(usage_data) > 3 else usage_data[:-1]
-        
-        if len(baseline_data) < 3:
-            baseline_data = usage_data[:len(usage_data)//2] if len(usage_data) > 6 else usage_data[:-1]
+            # 7'den az varsa, ilk günleri baseline yap
+            baseline_data = usage_data[:-2] if len(usage_data) > 2 else usage_data[:-1]
             
-        daily_usage = [usage.mb_used for usage in baseline_data]
+        if len(baseline_data) < 2:
+            baseline_data = usage_data[:max(2, len(usage_data)//2)]
+
+        daily_usage = [usage.mb_used for usage in baseline_data if usage.mb_used > 0]  # Sıfır kullanımları hariç tut
+        
+        if not daily_usage:  # Eğer hiç pozitif kullanım yoksa
+            daily_usage = [usage.mb_used for usage in baseline_data]  # Tüm verileri al
+
         ma7 = statistics.mean(daily_usage) if daily_usage else 0
-        std7 = statistics.stdev(daily_usage) if len(daily_usage) > 1 else 0
+        std7 = statistics.stdev(daily_usage) if len(daily_usage) > 1 else ma7 * 0.3  # Std yoksa ma7'nin %30'u
         
         # Son 3 günü kontrol et (anomali için)
         recent_days = usage_data[-3:] if len(usage_data) >= 3 else usage_data
         
         # Sudden Spike kontrolü - son 3 günde herhangi birinde
         for usage in recent_days:
-            spike_threshold = max(ma7 * self.spike_multiplier, ma7 + 3 * std7, 50)  # minimum 50MB threshold
+            # Daha hassas threshold - minimum 20MB'a düştük ve daha düşük çarpan
+            spike_threshold = max(ma7 * self.spike_multiplier, ma7 + 2 * std7, 20)  # minimum 20MB threshold (50'den düştük)
             if usage.mb_used > spike_threshold and ma7 > 0:
                 anomaly = Anomaly(
                     sim_id=sim_id,
@@ -65,7 +74,7 @@ class AnomalyDetector:
         # Sustained Drain kontrolü
         if len(usage_data) >= self.drain_days:
             recent_days_drain = usage_data[-self.drain_days:]
-            drain_threshold = max(ma7 * self.drain_multiplier, 20)  # minimum 20MB threshold
+            drain_threshold = max(ma7 * self.drain_multiplier, 10)  # minimum 10MB threshold (20'den düştük)
             consecutive_high = all(usage.mb_used > drain_threshold for usage in recent_days_drain)
             
             if consecutive_high and ma7 > 0:

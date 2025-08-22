@@ -3,7 +3,7 @@
 from fastapi  import HTTPException
 from .        import api_v1_router, manager
 from datetime import datetime
-from ..Models import AnalyzeResponse, AlertMessage, AnomalyResponse
+from ..Models import AnalyzeResponse, AlertMessage, AnomalyResponse, AnomalyDetail
 from ..Libs   import iot_service, anomaly_detector
 
 @api_v1_router.post("/analyze/{sim_id}", response_model=AnalyzeResponse)
@@ -97,13 +97,29 @@ async def analyze_sim_anomalies(sim_id: str):
         
         # WebSocket ile canlı uyarı gönder - sadece YENİ anomaliler için
         if new_anomalies_count > 0:
+            # En son tespit edilen anomalinin detaylarını al
+            latest_anomaly = new_anomalies[-1] if new_anomalies else None
+            
+            anomaly_detail = None
+            if latest_anomaly:
+                anomaly_detail = AnomalyDetail(
+                    type=latest_anomaly.type.value,
+                    reason=latest_anomaly.reason,
+                    evidence=latest_anomaly.evidence
+                )
+            
             alert = AlertMessage(
                 type="anomaly_detected",
                 sim_id=sim_id,
                 message=f"{new_anomalies_count} yeni anomali tespit edildi",
                 severity=risk_level,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
+                risk_score=risk_score,
+                anomaly_count=len(anomalies),
+                new_anomaly_count=new_anomalies_count,
+                latest_anomaly=anomaly_detail
             )
+            
             await manager.broadcast(alert.model_dump_json())
         
         return response

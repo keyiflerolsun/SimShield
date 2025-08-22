@@ -55,8 +55,8 @@ services:
     ports:
       - "3310:3310"
     environment:
-      - MONGODB_URI=mongodb://admin:simshield123@mongodb:27017/simshield_iot?authSource=admin
-      - REDIS_HOST=redis
+      - MONGODB_URI=mongodb://admin:simshield123@simshield_mongodb:27017/simshield_iot?authSource=admin
+      - REDIS_HOST=simshield_redis
       - REDIS_PORT=6379
       - ENVIRONMENT=production
     depends_on:

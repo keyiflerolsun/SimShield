@@ -2,7 +2,14 @@
 
 from pydantic import BaseModel
 from datetime import datetime
+from typing   import Optional, Dict, Any
 from .enums   import RiskLevel
+
+class AnomalyDetail(BaseModel):
+    """Anomali detay bilgisi"""
+    type: Optional[str] = None
+    reason: Optional[str] = None
+    evidence: Optional[Dict[str, Any]] = None
 
 class AlertMessage(BaseModel):
     """WebSocket üzerinden gönderilen uyarı mesajları"""
@@ -11,6 +18,11 @@ class AlertMessage(BaseModel):
     message: str
     severity: RiskLevel
     timestamp: datetime
+    # Yeni alanlar
+    risk_score: Optional[float] = None
+    anomaly_count: Optional[int] = None
+    new_anomaly_count: Optional[int] = None
+    latest_anomaly: Optional[AnomalyDetail] = None
 
 class ConnectionStatus(BaseModel):
     """WebSocket bağlantı durumu"""

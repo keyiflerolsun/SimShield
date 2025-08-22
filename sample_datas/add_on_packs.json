@@ -1,0 +1,42 @@
+[
+  {
+    "addon_id": "701", 
+    "name": "IoT +200MB", 
+    "extra_mb": 200, 
+    "price": 12.9, 
+    "apn": "apn-iot",
+    "description": "Küçük aşımlar için ekonomik ek paket"
+  },
+  {
+    "addon_id": "702", 
+    "name": "Video +2GB", 
+    "extra_mb": 2048, 
+    "price": 19.9, 
+    "apn": "apn-video",
+    "description": "Video uygulamaları için orta kapasiteli ek paket"
+  },
+  {
+    "addon_id": "703", 
+    "name": "IoT +500MB", 
+    "extra_mb": 500, 
+    "price": 24.9, 
+    "apn": "apn-iot",
+    "description": "IoT cihazları için orta kapasiteli ek paket"
+  },
+  {
+    "addon_id": "704", 
+    "name": "IoT +1GB", 
+    "extra_mb": 1024, 
+    "price": 39.9, 
+    "apn": "apn-iot",
+    "description": "Yoğun IoT kullanımı için büyük ek paket"
+  },
+  {
+    "addon_id": "705", 
+    "name": "Video +5GB", 
+    "extra_mb": 5120, 
+    "price": 49.9, 
+    "apn": "apn-video",
+    "description": "Yoğun video kullanımı için büyük ek paket"
+  }
+]
