@@ -107,33 +107,23 @@ async def generate_usage_data():
     sims_data = load_json_file("sims.json")
     device_profiles_data = load_json_file("device_profiles.json")
     
-    # Anomali senaryoları için özel SIM'ler - Çeşitlilik ve farklı risk seviyeleri
+    # Anomali senaryoları - Sadece enum'larda tanımlı anomali türleri
     anomaly_scenarios = {
-        # YÜKSEK RİSKLİ ANOMALILER (Risk: 80-100)
-        "2001": {"type": "critical_usage_spike", "day": 25, "intensity": "extreme"},     # Kritik ani kullanım artışı
-        "2002": {"type": "massive_data_drain", "day": 20, "intensity": "extreme"},      # Masif veri tüketimi
-        "2003": {"type": "security_breach", "day": 22, "intensity": "extreme"},         # Güvenlik ihlali şüphesi
+        # SUDDEN_SPIKE anomalileri
+        "2001": {"type": "sudden_spike", "day": 25, "intensity": "extreme"},     # Ani kullanım artışı
+        "2010": {"type": "sudden_spike", "day": 14, "intensity": "low"},         # Küçük ani artış
         
-        # ORTA RİSKLİ ANOMALILER (Risk: 40-70)
-        "2004": {"type": "sustained_drain", "day": 18, "intensity": "medium"},          # Sürekli yüksek kullanım
-        "2005": {"type": "pattern_change", "day": 15, "intensity": "medium"},           # Kullanım kalıbı değişikliği
-        "2006": {"type": "unexpected_roaming", "day": 12, "intensity": "medium"},       # Beklenmeyen roaming
-        "2007": {"type": "device_malfunction", "day": 10, "intensity": "medium"},       # Cihaz arızası şüphesi
-        "2008": {"type": "location_jump", "day": 8, "intensity": "medium"},             # Anormal lokasyon değişimi
+        # SUSTAINED_DRAIN anomalileri  
+        "2004": {"type": "sustained_drain", "day": 18, "intensity": "medium"},   # Sürekli yüksek kullanım
+        "2002": {"type": "sustained_drain", "day": 20, "intensity": "extreme"},  # Yoğun sürekli kullanım
         
-        # DÜŞÜK RİSKLİ ANOMALILER (Risk: 20-40)
-        "2009": {"type": "mild_inactivity", "day": 5, "intensity": "low"},              # Hafif inaktivite
-        "2010": {"type": "minor_spike", "day": 14, "intensity": "low"},                 # Küçük kullanım artışı
-        "2011": {"type": "cost_anomaly", "day": 16, "intensity": "low"},                # Maliyet anomalisi
-        "2012": {"type": "gradual_increase", "day": 19, "intensity": "low"},            # Kademeli artış
+        # INACTIVITY anomalileri
+        "2009": {"type": "inactivity", "day": 5, "intensity": "low"},            # İnaktivite
+        "2013": {"type": "inactivity", "day": 21, "intensity": "minimal"},       # Hafif inaktivite
         
-        # ÇOK DÜŞÜK RİSKLİ (Risk: 10-20)
-        "2013": {"type": "minor_variation", "day": 21, "intensity": "minimal"},         # Küçük varyasyon
-        "2014": {"type": "weekend_anomaly", "day": 13, "intensity": "minimal"},         # Hafta sonu anomalisi
-        
-        # KARMA ANOMALILER (Birden fazla anomali türü)
-        "2015": {"type": "multi_anomaly", "day": 7, "intensity": "high"},               # Karma anomali
-        "2016": {"type": "progressive_drain", "day": 11, "intensity": "medium"}         # Kademeli veri tüketimi
+        # UNEXPECTED_ROAMING anomalileri
+        "2006": {"type": "unexpected_roaming", "day": 12, "intensity": "medium"}, # Beklenmeyen roaming
+        "2003": {"type": "unexpected_roaming", "day": 22, "intensity": "extreme"} # Yoğun beklenmeyen roaming
     }
     
     for sim in sims_data:
@@ -176,115 +166,38 @@ async def generate_usage_data():
             # Rastgele küçük varyasyonlar ekle
             mb_used = base_usage * random.uniform(0.8, 1.2)
             
-            # Anomali senaryolarını uygula
+            # Anomali senaryolarını uygula - Sadece enum'lardaki türler
             if anomaly_scenario and day >= anomaly_scenario["day"]:
                 anomaly_type = anomaly_scenario["type"]
                 intensity = anomaly_scenario["intensity"]
                 
-                if anomaly_type == "critical_usage_spike":
-                    # Kritik ani kullanım artışı (çok yüksek risk)
-                    if day >= 25:
+                if anomaly_type == "sudden_spike":
+                    # Ani kullanım artışı
+                    if intensity == "extreme":
                         mb_used *= random.uniform(15, 25)  # 15-25x normal kullanım
+                    elif intensity == "low":
+                        mb_used *= random.uniform(2, 4)    # 2-4x normal kullanım
                         
-                elif anomaly_type == "massive_data_drain":
-                    # Masif veri tüketimi (sürekli çok yüksek)
-                    if day >= 20:
-                        mb_used *= random.uniform(10, 18)  # 10-18x normal kullanım
-                        
-                elif anomaly_type == "security_breach":
-                    # Güvenlik ihlali şüphesi (anormal pattern)
-                    if day >= 22:
-                        # Gece saatlerinde çok yüksek kullanım
-                        if current_hour < 6 or current_hour > 22:
-                            mb_used *= random.uniform(12, 20)
-                        else:
-                            mb_used *= random.uniform(3, 6)
-                            
                 elif anomaly_type == "sustained_drain":
-                    # Sürekli yüksek kullanım (orta risk)
-                    if day >= 18:
-                        mb_used *= random.uniform(4, 7)  # 4-7x normal kullanım
+                    # Sürekli yüksek kullanım
+                    if intensity == "extreme":
+                        mb_used *= random.uniform(10, 18)  # 10-18x normal kullanım
+                    elif intensity == "medium":
+                        mb_used *= random.uniform(4, 7)    # 4-7x normal kullanım
                         
-                elif anomaly_type == "pattern_change":
-                    # Kullanım kalıbı değişikliği (gece kullanımı)
-                    if day >= 15:
-                        if current_hour < 6:  # Gece saatleri
-                            mb_used *= random.uniform(5, 10)
-                        elif 6 <= current_hour <= 12:  # Sabah saatleri
-                            mb_used *= 0.2  # Çok düşük
-                        else:
-                            mb_used *= random.uniform(2, 4)
-                            
+                elif anomaly_type == "inactivity":
+                    # İnaktivite
+                    if random.random() < 0.7:  # %70 ihtimal inaktif
+                        mb_used = 0
+                    else:
+                        mb_used *= 0.3  # Çok düşük kullanım
+                        
                 elif anomaly_type == "unexpected_roaming":
                     # Beklenmeyen roaming
-                    if day >= 12:
-                        mb_used *= random.uniform(2, 4)
-                        
-                elif anomaly_type == "device_malfunction":
-                    # Cihaz arızası şüphesi (düzensiz kullanım)
-                    if day >= 10:
-                        if random.random() < 0.3:  # %30 ihtimal çok yüksek
-                            mb_used *= random.uniform(8, 15)
-                        elif random.random() < 0.3:  # %30 ihtimal çok düşük
-                            mb_used *= 0.1
-                        else:
-                            mb_used *= random.uniform(1.5, 3)
-                            
-                elif anomaly_type == "location_jump":
-                    # Anormal lokasyon değişimi (roaming ile birlikte)
-                    if day >= 8:
+                    if intensity == "extreme":
                         mb_used *= random.uniform(3, 6)
-                        
-                elif anomaly_type == "mild_inactivity":
-                    # Hafif inaktivite (düşük risk)
-                    if day >= 5:
-                        if random.random() < 0.7:  # %70 ihtimal inaktif
-                            mb_used = 0
-                        else:
-                            mb_used *= 0.3
-                            
-                elif anomaly_type == "minor_spike":
-                    # Küçük kullanım artışı
-                    if day >= 14:
+                    elif intensity == "medium":
                         mb_used *= random.uniform(2, 4)
-                        
-                elif anomaly_type == "cost_anomaly":
-                    # Maliyet anomalisi (normal kullanım ama yüksek maliyet)
-                    if day >= 16:
-                        mb_used *= random.uniform(1.5, 2.5)
-                        
-                elif anomaly_type == "gradual_increase":
-                    # Kademeli artış
-                    if day >= 19:
-                        days_since_start = day - 19
-                        multiplier = 1 + (days_since_start * 0.5)  # Her gün %50 artış
-                        mb_used *= multiplier
-                        
-                elif anomaly_type == "minor_variation":
-                    # Küçük varyasyon (çok düşük risk)
-                    if day >= 21:
-                        mb_used *= random.uniform(1.3, 1.8)
-                        
-                elif anomaly_type == "weekend_anomaly":
-                    # Hafta sonu anomalisi
-                    if day >= 13 and current_date.weekday() >= 5:  # Hafta sonu
-                        mb_used *= random.uniform(3, 6)
-                        
-                elif anomaly_type == "multi_anomaly":
-                    # Karma anomali (birden fazla problem)
-                    if day >= 7:
-                        # Hem yüksek kullanım hem de pattern değişikliği
-                        if current_hour < 6:  # Gece
-                            mb_used *= random.uniform(8, 15)
-                        else:
-                            mb_used *= random.uniform(4, 8)
-                            
-                elif anomaly_type == "progressive_drain":
-                    # Kademeli veri tüketimi artışı
-                    if day >= 11:
-                        days_since_start = day - 11
-                        multiplier = 2 + (days_since_start * 0.3)  # Kademeli artış
-                        mb_used *= multiplier
             
             # Roaming kullanımı
             roaming_mb = 0
@@ -292,20 +205,11 @@ async def generate_usage_data():
                 anomaly_type = anomaly_scenario["type"]
                 
                 if anomaly_type == "unexpected_roaming":
-                    # Beklenmeyen roaming - yoğun roaming kullanımı
-                    roaming_mb = random.uniform(80, 200)  # Çok yüksek roaming
-                    
-                elif anomaly_type == "location_jump":
-                    # Lokasyon değişimi - anormal roaming pattern
-                    roaming_mb = random.uniform(100, 300)  # Ekstrem roaming
-                    
-                elif anomaly_type == "security_breach":
-                    # Güvenlik ihlali - şüpheli roaming
-                    roaming_mb = random.uniform(50, 150)
-                    
-                elif anomaly_type == "multi_anomaly":
-                    # Karma anomali - roaming da dahil
-                    roaming_mb = random.uniform(60, 180)
+                    # Beklenmeyen roaming anomalisi
+                    if anomaly_scenario["intensity"] == "extreme":
+                        roaming_mb = random.uniform(100, 300)  # Yüksek roaming
+                    elif anomaly_scenario["intensity"] == "medium":
+                        roaming_mb = random.uniform(50, 150)   # Orta roaming
                     
             elif device_type == "Tracker" and random.random() < 0.1:  # Normal roaming
                 roaming_mb = random.uniform(5, 20)
@@ -321,7 +225,7 @@ async def generate_usage_data():
             
             usage_data.append(usage_entry)
     
-    logger.info(f"📊 {len(usage_data)} kullanım kaydı oluşturuldu (16 farklı anomali senaryosu dahil - Risk seviyeleri: Düşük/Orta/Yüksek/Kritik)")
+    logger.info(f"📊 {len(usage_data)} kullanım kaydı oluşturuldu (8 anomali senaryosu - Sadece enum'larda tanımlı türler)")
     return usage_data
 
 async def load_sample_data():

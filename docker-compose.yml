@@ -52,6 +52,7 @@ services:
     build: .
     container_name: simshield_app
     restart: unless-stopped
+    tty: true
     ports:
       - "3310:3310"
     environment:

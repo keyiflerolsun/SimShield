@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SimShield IoT Fleet Dashboard</title>
-  <link rel="stylesheet" href="/static/home/CSS/iot-dashboard.css">
+  <link rel="stylesheet" href="{{ url_for('static_home', path='CSS/iot-dashboard.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static_home', path='favicon.ico') }}" type="image/x-icon"/>
 </head>
 <body>
   <div class="container">
@@ -220,6 +221,6 @@
     </footer>
   </div>
 
-  <script src="/static/home/JS/iot-dashboard.js"></script>
+  <script type="module" src="{{ url_for('static_home', path='JS/iot-dashboard.js') }}"></script>        
 </body>
 </html>

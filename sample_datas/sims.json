@@ -135,6 +135,15 @@
     "city": "Van"
   },
   {
+    "sim_id": "2016", 
+    "customer_id": "9006", 
+    "device_type": "Tracker", 
+    "apn": "apn-iot", 
+    "plan_id": "12", 
+    "status": "active", 
+    "city": "Kayseri"
+  },
+  {
     "sim_id": "2099", 
     "customer_id": "9007", 
     "device_type": "Camera", 

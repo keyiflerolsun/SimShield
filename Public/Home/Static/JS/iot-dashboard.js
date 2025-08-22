@@ -693,9 +693,7 @@ class SimShieldDashboard {
       'sudden_spike': { icon: '⬆️', title: 'Ani Artış' },
       'sustained_drain': { icon: '🔋', title: 'Sürekli Yüksek Kullanım' },
       'inactivity': { icon: '😴', title: 'İnaktivite' },
-      'unexpected_roaming': { icon: '🌍', title: 'Beklenmeyen Roaming' },
-      'data_anomaly': { icon: '📊', title: 'Veri Anomalisi' },
-      'location_anomaly': { icon: '📍', title: 'Konum Anomalisi' }
+      'unexpected_roaming': { icon: '🌍', title: 'Beklenmeyen Roaming' }
     };
     return types[type] || { icon: '⚠️', title: 'Bilinmeyen Anomali' };
   }
@@ -1629,46 +1627,11 @@ class SimShieldDashboard {
 
   getAnomalyTypeText(type) {
     const typeMap = {
-      // Kullanım Anomalileri
-      'usage_spike': 'Ani Kullanım Artışı',
+      // Enum'larda tanımlı anomali türleri
       'sudden_spike': 'Ani Kullanım Artışı',
-      'critical_usage_spike': 'Kritik Kullanım Artışı',
-      'minor_spike': 'Küçük Kullanım Artışı',
-      
-      // Veri Tüketimi Anomalileri
-      'data_drain': 'Veri Tüketim Anomalisi',
       'sustained_drain': 'Sürekli Yüksek Kullanım',
-      'massive_data_drain': 'Masif Veri Tüketimi',
-      'progressive_drain': 'Kademeli Veri Tüketimi',
-      
-      // Güvenlik Anomalileri
-      'security_breach': 'Güvenlik İhlali Şüphesi',
-      'device_malfunction': 'Cihaz Arızası Şüphesi',
-      
-      // Lokasyon/Roaming Anomalileri
-      'location_change': 'Lokasyon Değişikliği',
-      'location_jump': 'Anormal Lokasyon Değişimi',
-      'roaming': 'Dolaşım Anomalisi',
-      'unexpected_roaming': 'Beklenmeyen Roaming',
-      
-      // Pattern Anomalileri
-      'pattern_change': 'Kullanım Kalıbı Değişikliği',
-      'gradual_increase': 'Kademeli Artış',
-      'weekend_anomaly': 'Hafta Sonu Anomalisi',
-      
-      // İnaktivite Anomalileri
       'inactivity': 'Uzun Süreli İnaktivite',
-      'mild_inactivity': 'Hafif İnaktivite',
-      
-      // Maliyet Anomalileri
-      'cost_anomaly': 'Maliyet Anomalisi',
-      
-      // Karma Anomaliler
-      'multi_anomaly': 'Çoklu Anomali',
-      'minor_variation': 'Küçük Varyasyon',
-      
-      // Genel
-      'device_change': 'Cihaz Değişikliği'
+      'unexpected_roaming': 'Beklenmeyen Roaming'
     };
     
     return typeMap[type] || type;
