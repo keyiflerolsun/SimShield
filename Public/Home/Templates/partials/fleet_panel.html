@@ -1,0 +1,29 @@
+<div class="left-panel">
+  <div class="card fleet-card">
+    <div class="section-title">SIM Filosu</div>
+    
+    <!-- Arama ve Filtreler -->
+    <input type="text" class="search-box" id="search-input" placeholder="SIM ID veya cihaz türü ara...">
+    
+    <div class="filter-row">
+      <select class="filter-select" id="risk-filter">
+        <option value="">Tüm Risk</option>
+        <option value="red">Yüksek</option>
+        <option value="orange">Orta</option>
+        <option value="green">Düşük</option>
+      </select>
+      <select class="filter-select" id="status-filter">
+        <option value="">Tüm Durum</option>
+        <option value="active">Aktif</option>
+        <option value="blocked">Engelli</option>
+        <option value="suspended">Askıda</option>
+      </select>
+      <select class="filter-select" id="city-filter">
+        <option value="">Tüm Şehir</option>
+      </select>
+    </div>
+    
+    <div class="muted">Listeden bir SIM seçin — sağ panelde detay gözükecek.</div>
+    <div class="list" id="fleet-list">Yükleniyor...</div>
+  </div>
+</div>

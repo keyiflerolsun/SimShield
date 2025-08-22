@@ -1,0 +1,72 @@
+<div class="card sim-detail-card">
+  <!-- Header -->
+  <div class="sim-detail-header">
+    <div class="sim-detail-title">
+      <div class="section-title">SIM Detayı</div>
+      <div id="selected-sim-name" class="sim-name">Hiçbir SIM seçilmedi</div>
+      <div id="selected-sim-meta" class="sim-meta">—</div>
+    </div>
+    <div class="sim-header-actions">
+      <button id="analyze-btn" class="secondary" disabled title="Seçili SIM kartını detaylı analiz et">🔍 Analiz Et</button>
+    </div>
+  </div>
+
+  <!-- Sticky Actions Toolbar -->
+  <div class="sticky-actions-toolbar" id="sticky-actions">
+    <div class="actions-label">Hızlı Aksiyonlar:</div>
+    <div class="actions-buttons">
+      <button id="notify-btn" class="action-btn action-notify" disabled title="Uyarı bildirimi gönder">
+        📢 <span class="action-text">Bildir</span>
+      </button>
+      <button id="throttle-btn" class="action-btn action-throttle" disabled title="Bağlantı hızını sınırla">
+        🐌 <span class="action-text">Yavaşlat</span>
+      </button>
+      <button id="freeze-btn" class="action-btn action-freeze danger" disabled title="24 saat boyunca dondur">
+        ❄️ <span class="action-text">Dondur</span>
+      </button>
+      <button id="best-options-btn" class="action-btn action-best secondary" disabled title="En iyi seçenekleri analiz et">
+        💡 <span class="action-text">Seçenekler</span>
+      </button>
+      <button id="whatif-btn" class="action-btn action-whatif secondary" disabled title="Simülasyon senaryoları">
+        🔮 <span class="action-text">Simülasyon</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button class="tab-btn active" data-tab="overview">📊 Genel Bakış</button>
+    <button class="tab-btn" data-tab="charts">📈 Kullanım Grafiği</button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Overview Tab -->
+    <div class="tab-pane active" id="tab-overview">
+      <!-- Anomaly Alert Section (only shows when anomalies exist) -->
+      <div class="anomaly-alert-section" id="anomaly-alert-section" style="display: none;">
+        <div class="anomaly-alert-header">
+          <span class="anomaly-icon">⚠️</span>
+          <span class="anomaly-title">Anomali Tespit Edildi!</span>
+          <span class="anomaly-count" id="anomaly-count-badge">0</span>
+        </div>
+        <div class="anomaly-alert-content" id="anomaly-alert-content">
+          <!-- Dynamic anomaly content will be inserted here -->
+        </div>
+      </div>
+
+      <!-- SIM Details -->
+      <div class="sim-details" id="sim-details">
+        <div class="muted">SIM seçildiğinde detaylar gözükecek</div>
+      </div>
+    </div>
+
+    <!-- Charts Tab -->
+    <div class="tab-pane" id="tab-charts">
+      <div class="section-subtitle">30 Gün Kullanım Trendi</div>
+      <div class="chart" id="usage-chart">
+        <div class="muted">SIM seçildiğinde grafik gözükecek</div>
+      </div>
+    </div>
+  </div>
+</div>

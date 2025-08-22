@@ -1,0 +1,45 @@
+<!-- Canlı Uyarılar Paneli -->
+<div class="floating-panel" id="alerts-panel">
+  <div class="floating-panel-header">
+    <h3>🔴 Canlı Uyarılar</h3>
+    <div class="floating-panel-controls">
+      <div class="alerts-count-panel" id="alerts-count-panel">0</div>
+      <button class="toggle-sound-btn-panel" id="toggle-sound-panel" title="Ses bildirimleri">🔊</button>
+      <button class="close-btn" id="close-alerts">×</button>
+    </div>
+  </div>
+  <div class="floating-panel-content">
+    <div class="alerts-list-panel" id="alerts-list-panel">
+      <div class="alert-placeholder">
+        <div class="alert-placeholder-icon">📡</div>
+        <div class="alert-placeholder-text">WebSocket bağlantısı bekleniyor...</div>
+      </div>
+    </div>
+  </div>
+  <div class="floating-panel-footer">
+    <button class="clear-alerts-btn" id="clear-alerts-panel">🗑️ Tümünü Temizle</button>
+    <button class="export-alerts-btn" id="export-alerts">📤 Dışa Aktar</button>
+  </div>
+</div>
+
+<!-- Oturum Geçmişi Paneli -->
+<div class="floating-panel" id="actions-panel">
+  <div class="floating-panel-header">
+    <h3>🗂️ Oturum İşlem Geçmişi</h3>
+    <div class="floating-panel-controls">
+      <button class="close-btn" id="close-actions">×</button>
+    </div>
+  </div>
+  <div class="floating-panel-content">
+    <div class="actions-log-panel" id="actions-log-panel">
+      <div class="action-placeholder">
+        <div class="action-placeholder-icon">📋</div>
+        <div class="action-placeholder-text">Henüz işlem yapılmadı<br>SIM işlemleri burada görünecek</div>
+      </div>
+    </div>
+  </div>
+  <div class="floating-panel-footer">
+    <button class="clear-actions-btn" id="clear-actions-panel">🗑️ Geçmişi Temizle</button>
+    <button class="export-actions-btn" id="export-actions">📤 Dışa Aktar</button>
+  </div>
+</div>

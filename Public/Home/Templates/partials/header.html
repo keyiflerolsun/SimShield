@@ -1,0 +1,30 @@
+<header>
+  <h1>
+    <span class="shield-icon">🛡️</span>
+    SimShield IoT Fleet Dashboard
+  </h1>
+  <div class="controls">
+    <div class="header-panels">
+      <button id="alerts-btn" class="alerts-btn" title="Canlı uyarıları göster">🔴 Uyarılar <span class="alerts-count" id="alerts-count">0</span></button>
+      <button id="actions-btn" class="actions-btn" title="Oturum geçmişini göster">🗂️ Geçmiş</button>
+    </div>
+    
+    <div class="connection-status-panel">
+      <div class="connection-item">
+        <span class="status-dot" id="ws-dot"></span>
+        <span id="ws-status">bağlanıyor...</span>
+        <small style="color: var(--muted); margin-left: 4px;">WebSocket</small>
+      </div>
+      <div class="connection-item">
+        <span class="status-dot api-dot connected" id="api-dot"></span>
+        <span id="api-status">bağlanıyor...</span>
+        <small style="color: var(--muted); margin-left: 4px;">REST API</small>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button id="refresh" title="Filo verilerini yenile">🔄 Filo Yenile</button>
+      <button id="analyze-all-btn" class="secondary" title="Filodaki tüm SIM kartlarını toplu olarak analiz et">🔍 Tüm SIM'leri Analiz Et</button>
+    </div>
+  </div>
+</header>

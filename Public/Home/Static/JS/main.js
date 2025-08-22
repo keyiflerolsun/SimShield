@@ -6,9 +6,8 @@ class SimShieldDashboard {
     this.lastActionSimId = null; // Son manuel aksiyon SIM ID'si
     
     this.initElements();
-    this.initManagers();
+    this.initManagers(); // Bu zaten WebSocket'i başlatır
     this.initEventListeners();
-    this.connectWebSocket();
     this.loadFleetData();
     
     // Başlangıç mesajı
@@ -512,12 +511,20 @@ class SimShieldDashboard {
 // Dashboard'ı başlat
 let dashboard;
 let panelManager;
+let isInitialized = false; // Tekrarlı initialization'ı engelle
 
 function initializeDashboard() {
+  // Eğer zaten initialize edilmişse, tekrar yapma
+  if (isInitialized) {
+    console.log('%c⚠️ Dashboard zaten başlatılmış - tekrarlama engellendi', 'color: #f39c12;');
+    return;
+  }
+  
   console.log('%c⚙️ Dashboard bileşenleri hazırlanıyor...', 'color: #3498db;');
   
   dashboard = new SimShieldDashboard();
   panelManager = new PanelManager();
+  isInitialized = true; // Flag'i set et
   
   console.log('%c✅ Dashboard aktif - IoT filo izleme sistemi hazır', 'color: #27ae60; font-weight: bold;');
   

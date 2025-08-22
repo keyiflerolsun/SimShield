@@ -41,15 +41,8 @@
     
     console.log('%c✨ Tüm modüller başarıyla yüklendi', 'color: #27ae60; font-weight: bold;');
     
-    // Modüller yüklendikten sonra küçük bir delay ile initialization'ı tetikle
-    setTimeout(() => {
-      if (typeof initializeDashboard === 'function') {
-        console.log('%c🚀 Dashboard başlatılıyor...', 'color: #9b59b6; font-weight: bold;');
-        initializeDashboard();
-      } else {
-        console.error('%c❌ Dashboard başlatma hatası', 'color: #e74c3c; font-weight: bold;');
-      }
-    }, 100);
+    // main.js'deki initializeDashboard otomatik olarak çalışacak
+    console.log('%c🎯 Dashboard initialization main.js tarafından handle ediliyor...', 'color: #9b59b6;');
     
   } catch (error) {
     console.error('%c❌ Modül yükleme hatası:', 'color: #e74c3c; font-weight: bold;', error);
