@@ -10,8 +10,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONIOENCODING="UTF-8"
 ENV LANGUAGE="tr_TR.UTF-8" LANG="tr_TR.UTF-8" LC_ALL="tr_TR.UTF-8" TZ="Europe/Istanbul"
 
 # * Çalışma Alanı
-WORKDIR /usr/src/SimShield-IoT
-COPY ./ /usr/src/SimShield-IoT
+WORKDIR /usr/src/SimShield
+COPY ./ /usr/src/SimShield
 
 # ? Sistem Kurulumları ve Gereksiz Dosyaların Silinmesi
 RUN apt-get update -y && \

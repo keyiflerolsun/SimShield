@@ -722,7 +722,7 @@ h1 {
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 18px;
-  min-height: calc(100vh - 120px);
+  min-height: auto; /* calc(100vh - 120px) gereksiz fazla yükseklik yapıyordu */
 }
 
 .left-panel {
@@ -1519,6 +1519,8 @@ footer {
 .sim-detail-card {
   position: relative;
   overflow: hidden;
+  max-height: 70vh; /* Gereksiz uzama engellendi */
+  height: fit-content; /* İçeriğe göre boyut */
 }
 
 .sim-detail-header {
